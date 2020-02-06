@@ -1,1 +1,5 @@
+# virtual environment stuff
 enpm661_env/
+
+# jupyter notebook stuff
+*.ipynb_checkpoints
