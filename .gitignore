@@ -1,5 +1,8 @@
 # virtual environment stuff
 enpm661_env/
 
+# python stuff
+*__pycache__/
+
 # jupyter notebook stuff
 *.ipynb_checkpoints
