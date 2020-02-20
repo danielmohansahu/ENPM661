@@ -22,9 +22,9 @@ if __name__ == "__main__":
     goal_node = make_node(goal)
 
     # define a random start node
-    start_node = Node(np.random.permutation(goal_node.state))
+    start_node = make_node(np.random.permutation(goal_node.state.flatten()))
     while not start_node.solveable():
-        start_node = Node(np.random.permutation(goal_node.state))
+        start_node = make_node(np.random.permutation(goal_node.state.flatten()))
 
     print("Start node: {}".format(start_node))
 
