@@ -89,6 +89,8 @@ class Tree:
 
 class Node:
     """A simple data structure to handle node information.
+
+    No error checking is done in this class.
     """
     def __init__(self, state, parent=None):
         # assume state is square np array
@@ -96,6 +98,17 @@ class Node:
         # assume parent is a reference to another node
         self.parent = parent
 
+    def solveable(self):
+        """Returns true if this node is solveable
+        https://math.stackexchange.com/questions/293527/how-to-check-if-a-8-puzzle-is-solvable
+        """
+        state = self.state.flatten().tolist()
+        inv = sum(sum(1 for j in range(i+1,len(state)) if state[j] > val) for i,val in enumerate(state))
+        return not bool(inv%2)
+
     def __hash__(self):
         return hash(tuple(self.state.flatten()))
+
+    def __str__(self):
+        return " ".join([str(v) for v in self.state.flatten()])
 

@@ -6,10 +6,6 @@ import numpy as np
 from custom.node import Tree, Node, make_node
 from custom.traverse import get_children, bfs, backtrack
 
-# handy anonymous function for solveability of given problem
-#   https://math.stackexchange.com/questions/293527/how-to-check-if-a-8-puzzle-is-solvable
-solveable = lambda ic: sum(sum(1 for j in range(i+1,len(ic)) if ic[j] > val) for i,val in enumerate(ic))%2 == 0
-
 def parse_args():
     """Parse command line args
     """
@@ -26,11 +22,11 @@ if __name__ == "__main__":
     goal_node = make_node(goal)
 
     # define a random start node
-    start = np.random.permutation(goal_node.state)
-    while not solveable(start.flatten()):
-        start = np.random.permutation(goal_node.state)
-    
-    start_node = Node(start)
+    start_node = Node(np.random.permutation(goal_node.state))
+    while not start_node.solveable():
+        start_node = Node(np.random.permutation(goal_node.state))
+
+    print("Start node: {}".format(start_node))
 
     # initialize our tree
     tree = Tree(goal_node)
