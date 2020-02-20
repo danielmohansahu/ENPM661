@@ -18,8 +18,6 @@ def make_node(state, parent=None):
     # sanity checks:
     if not shape*shape == len(state):
         raise RuntimeError("Square root of the length of input list must be an integer!.")
-    if not isinstance(state,list):
-        raise RuntimeError("Expected state to be of type 'list'")
     if not isinstance(parent,(Node, type(None))):
         raise RuntimeError("Expected parent to be of type 'custom.Node'")
 
@@ -34,14 +32,18 @@ class Tree:
     def __init__(self, goal_node):
         # nodes: flat dict of (hash: object) for Nodes.
         self.nodes = {}
+        
+        # also keep a list of "correct" nodes (not hashes!!)
+        self.successes = []
+        self.optimal_path_length = np.inf
+        self.optimal_node = None
 
-        # also keep a list of "correct" node hashes
+        # keep track of our target node
         self.goal_node = goal_node
         self.goal_hash = hash(goal_node)
-        self.successes = []
 
-    def __len__(self):
-        return len(self.nodes)
+    def solved(self):
+        return len(self.successes) > 0
 
     def backtrack(self, node):
         """Walk back up the given tree, returning the sequential set 
@@ -57,6 +59,15 @@ class Tree:
         sequence.reverse()
         return sequence
 
+    def check_optimal(self):
+        """Check which of our successes is the optimal path.
+        """
+        for node in self.successes:
+            path_length = len(self.backtrack(node))
+            if path_length < self.optimal_path_length:
+                self.optimal_node = node
+                self.optimal_path_length = path_length
+
     def success(self, node_hash):
         """Check if the given node matches our goal state.
         """
@@ -66,9 +77,6 @@ class Tree:
     def add(self,node):
         """Add a single node to the tree.
 
-        Args:
-            node: A custom.Node object
-
         Returns:
             bool indicating if the traversal should continue
         """
@@ -76,7 +84,9 @@ class Tree:
         
         # check if this is a successful node.
         if self.success(node_hash):
+            self.nodes[node_hash] = node
             self.successes.append(node)
+            self.check_optimal()
             return False
         
         # check if node already exists; if so ignore
@@ -86,6 +96,23 @@ class Tree:
         # add to dict
         self.nodes[node_hash] = node
         return True
+
+    def __len__(self):
+        # define length as the length of nodes
+        return len(self.nodes)
+
+    #-------------------- PRINTING API ------------------------#
+
+    def __str__(self):
+        """ String representation of the tree.
+        We define the string representation of a tree as the 
+        collection of nodes from start to goal
+        """
+        result = ""
+        if self.solved():
+            for node_hash in self.backtrack(self.optimal_node):
+                result += str(self.nodes[node_hash]) + "\n"
+        return result
 
 class Node:
     """A simple data structure to handle node information.
