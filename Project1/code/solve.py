@@ -21,6 +21,7 @@ if __name__ == "__main__":
     # define our goal node and start node
     goal = [*range(1,args.size)] + [0]
     goal_node = make_node(goal)
+    print("Goal node: {}".format(goal_node))
 
     # define a random start node
     start_node = make_node(np.random.permutation(goal_node.state.flatten()))
@@ -32,20 +33,18 @@ if __name__ == "__main__":
     tree = Tree(goal_node)
 
     # build out the brute force search of all paths
-    tree = bfs(start_node, tree, verbose=True)
+    tree = bfs(start_node, tree, verbose=False)
 
     # find the optimal successful path
     if not tree.successes:
         print("No solution found.")
-    
-    min_length = np.inf
-    optimal = None
-    for success in tree.successes:
-        path_length = len(tree.backtrack(success))
-        if path_length < min_length:
-            optimal = success
-            min_length = path_length
-    print(min_length)
+    else:
+        print("Optimal solution length: {}".format(tree.optimal_path_length))
 
-    import code
-    code.interact(local=locals())
+    # print our results
+    to_file(tree.print_soln(), "nodePath.txt")
+    to_file(tree.print_all(), "Nodes.txt")
+    to_file(tree.print_info(), "NodeisInfo.txt")
+
+    # import code
+    # code.interact(local=locals())
