@@ -15,6 +15,7 @@ def bfs(start_node, tree, verbose=False):
         st = time.time()
 
     current_nodes = [start_node]
+    index = 0
     while current_nodes:
         if verbose:
             loop_time = time.time()
@@ -27,7 +28,9 @@ def bfs(start_node, tree, verbose=False):
 
             # find the children of the given node:
             children = get_children(node.state)
-            new_nodes += [Node(child,node) for child in children]
+            for child in children:
+                index += 1
+                new_nodes += [Node(child, node, index)]
         
         # update our list
         current_nodes = new_nodes

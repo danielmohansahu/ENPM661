@@ -33,9 +33,6 @@ class Tree:
         # nodes: flat dict of (hash: object) for Nodes.
         self.nodes = {}
 
-        # an ordered list of nodes (for bookkeeping)
-        self.ordered = []
-
         # also keep a list of "correct" nodes (not hashes!!)
         self.successes = []
         self.optimal_path_length = np.inf
@@ -90,7 +87,6 @@ class Tree:
             print("Success found!")
             self.successes.append(node)
             if node_hash not in self.nodes.keys():
-                self.ordered.append(node_hash)
                 self.nodes[node_hash] = node
             self.check_optimal()
             return False
@@ -101,7 +97,6 @@ class Tree:
 
         # add to dict
         self.nodes[node_hash] = node
-        self.ordered.append(node_hash)
         return True
     
     def __len__(self):
@@ -132,12 +127,9 @@ class Tree:
         This is really slow....
         """
         result = ""
-        for node_idx, node_hash in enumerate(self.ordered):
-            # get parent ID
-            parent_hash = hash(self.nodes[node_hash].parent)
-            print(parent_hash)
-            parent_idx = self.ordered.index(parent_hash)
-            result += "{} {} 0\n".format(node_idx, parent_idx)
+        for _,node in self.nodes.items():
+            parent_idx = 0 if not node.parent else node.parent.index
+            result += "{} {} 0\n".format(node.index, parent_idx)
         return result
 
 class Node:
@@ -145,11 +137,13 @@ class Node:
 
     No error checking is done in this class.
     """
-    def __init__(self, state, parent=None):
+    def __init__(self, state, parent=None, index=0):
         # assume state is square np array
         self.state = state
         # assume parent is a reference to another node
         self.parent = parent
+        # index (order in which this was found)
+        self.index = index
 
     def solveable(self):
         """Returns true if this node is solveable
