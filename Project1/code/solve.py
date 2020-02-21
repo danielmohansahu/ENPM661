@@ -44,7 +44,7 @@ if __name__ == "__main__":
     # print our results
     to_file(tree.print_soln(), "nodePath.txt")
     to_file(tree.print_all(), "Nodes.txt")
-    to_file(tree.print_info(), "NodeisInfo.txt")
+    to_file(tree.print_info(), "NodesInfo.txt")
 
     # import code
     # code.interact(local=locals())
