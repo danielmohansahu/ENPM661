@@ -32,7 +32,10 @@ class Tree:
     def __init__(self, goal_node):
         # nodes: flat dict of (hash: object) for Nodes.
         self.nodes = {}
-        
+
+        # an ordered list of nodes (for bookkeeping)
+        self.ordered = []
+
         # also keep a list of "correct" nodes (not hashes!!)
         self.successes = []
         self.optimal_path_length = np.inf
@@ -84,8 +87,11 @@ class Tree:
         
         # check if this is a successful node.
         if self.success(node_hash):
-            self.nodes[node_hash] = node
+            print("Success found!")
             self.successes.append(node)
+            if node_hash not in self.nodes.keys():
+                self.ordered.append(node_hash)
+                self.nodes[node_hash] = node
             self.check_optimal()
             return False
         
@@ -95,23 +101,43 @@ class Tree:
 
         # add to dict
         self.nodes[node_hash] = node
+        self.ordered.append(node_hash)
         return True
-
+    
     def __len__(self):
         # define length as the length of nodes
         return len(self.nodes)
 
     #-------------------- PRINTING API ------------------------#
 
-    def __str__(self):
-        """ String representation of the tree.
-        We define the string representation of a tree as the 
-        collection of nodes from start to goal
+    def print_soln(self):
+        """ String representation of the solution.
         """
         result = ""
         if self.solved():
             for node_hash in self.backtrack(self.optimal_node):
                 result += str(self.nodes[node_hash]) + "\n"
+        return result
+    
+    def print_all(self):
+        """ String representation of all explored nodes..
+        """
+        result = ""
+        for _,node in self.nodes.items():
+            result += str(node) + "\n"
+        return result
+
+    def print_info(self):
+        """String representation of parent/child relationship of nodes.
+        This is really slow....
+        """
+        result = ""
+        for node_idx, node_hash in enumerate(self.ordered):
+            # get parent ID
+            parent_hash = hash(self.nodes[node_hash].parent)
+            print(parent_hash)
+            parent_idx = self.ordered.index(parent_hash)
+            result += "{} {} 0\n".format(node_idx, parent_idx)
         return result
 
 class Node:
@@ -130,9 +156,14 @@ class Node:
         https://math.stackexchange.com/questions/293527/how-to-check-if-a-8-puzzle-is-solvable
         """
         state = self.state.flatten().tolist()
-        inv = sum(sum(1 for j in range(i+1,len(state)) if state[j] > val) for i,val in enumerate(state))
-        return not bool(inv%2)
-
+        size = len(state)
+        inv_count = 0 
+        for i in range(size):
+            for j in range(i+1,size): 
+                if (state[j] and state[i] and state[i] > state[j]):
+                  inv_count += 1
+        return inv_count%2 == 0
+    
     def __hash__(self):
         return hash(tuple(self.state.flatten()))
 

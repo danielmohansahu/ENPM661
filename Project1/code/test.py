@@ -3,6 +3,7 @@
 import sys
 import argparse
 import numpy as np
+from custom.utils import to_file
 from custom.node import Tree, Node, make_node
 from custom.traverse import get_children, bfs, backtrack
 
@@ -25,7 +26,6 @@ if __name__ == "__main__":
     start_node = make_node(np.random.permutation(goal_node.state.flatten()))
     while not start_node.solveable():
         start_node = make_node(np.random.permutation(goal_node.state.flatten()))
-
     print("Start node: {}".format(start_node))
 
     # initialize our tree
