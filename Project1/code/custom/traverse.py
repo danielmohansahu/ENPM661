@@ -11,8 +11,8 @@ def bfs(start_node, tree, verbose=False):
     This was initially written to be recursive, by python is
     kinda squeamish about recursion limits.
     """
-    if verbose:
-        st = time.time()
+    # timing info
+    st = time.time()
 
     current_nodes = [start_node]
     index = 0
@@ -39,8 +39,7 @@ def bfs(start_node, tree, verbose=False):
             msg = "Processed {} nodes in {:.3f} seconds, {} more found."
             print(msg.format(len(tree),time.time()-loop_time,len(new_nodes)))
 
-    if verbose:
-        print("Tree traversed in {:.3f} seconds".format(time.time()-st))
+    print("Tree traversed in {:.3f} seconds".format(time.time()-st))
     
     # this really isn't necessary, but it's for nice function flow
     return tree
