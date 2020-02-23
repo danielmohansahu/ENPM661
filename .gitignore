@@ -10,5 +10,8 @@ enpm661_env/
 # vim stuff
 *.*.swp
 
+# libreoffice stuff
+*.~lock.*
+
 # ignore submitted stuff
 submitted/
