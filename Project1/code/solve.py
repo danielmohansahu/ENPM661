@@ -21,7 +21,7 @@ def parse_args():
     # determine run mode based on input flags
     if args.start:
         # if we're given an argument list, ignore other args
-        args.size = len(args.start)
+        args.number = len(args.start)
         args.random = False
     elif not args.random:
         raise RuntimeError("Cannot run with --random False and no --start node given.")
@@ -33,7 +33,7 @@ if __name__ == "__main__":
     args = parse_args()
 
     # define our goal node and start node
-    goal = [*range(1,args.size)] + [0]
+    goal = [*range(1,args.number)] + [0]
     goal_node = make_node(goal)
     print("Goal node: {}".format(goal_node))
 
