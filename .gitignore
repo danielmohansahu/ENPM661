@@ -6,3 +6,6 @@ enpm661_env/
 
 # jupyter notebook stuff
 *.ipynb_checkpoints
+
+# vim stuff
+*.*.swp
