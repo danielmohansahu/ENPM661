@@ -162,5 +162,5 @@ class Node:
         return hash(tuple(self.state.flatten()))
 
     def __str__(self):
-        return " ".join([str(v) for v in self.state.flatten()])
+        return " ".join([str(v) for v in self.state.flatten('F')])
 
