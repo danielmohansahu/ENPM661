@@ -9,3 +9,6 @@ enpm661_env/
 
 # vim stuff
 *.*.swp
+
+# ignore submitted stuff
+submitted/
