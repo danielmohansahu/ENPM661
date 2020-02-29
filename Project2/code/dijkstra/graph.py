@@ -18,14 +18,11 @@ class Graph:
         # nodes: dict of explored nodes (key: value) -> (hash: node)
         # tree: hierarchical relationships between nodes (parent: children)
         self.nodes, self.tree = self.construct(start_node)
-        
-        # dict of hierarchical relationships between nodes (parent: children)
-        self.tree = defaultdict(list)
 
     def construct(self, start_node):
         """Build out the set of Nodes, starting from our start node.
         """
-        tree = defaultdict(list)
+        tree = defaultdict(dict)
         nodes = {}
         
         current_nodes = [start_node] 
@@ -46,7 +43,8 @@ class Graph:
                 # valid node; add it to our visited nodes
                 nodes[node_hash] = node
                 children = node.get_children()
-                tree[hash(node.parent)].append(node_hash)
+                if node.parent:
+                    tree[hash(node.parent)][node_hash] = node.cost2come - node.parent.cost2come
                 
                 # add children to be processed next round
                 new_nodes += children
