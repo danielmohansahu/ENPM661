@@ -4,8 +4,8 @@
 https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm
 """
 import numpy as np
-from queue import PriorityQueue
-from collections import defaultdict
+from heapq import heappush, heappop
+from collections import defaultdict, OrderedDict
 from .node import Node
 from .graph import Graph
 
@@ -29,30 +29,41 @@ class Dijkstra:
         given graph.
         """
         # construct queue of vertices
-        Q = PriorityQueue()
+        Q = []
         
         # construct dicts of distances / predecessors
         dist = defaultdict(lambda: np.inf)
         prev = defaultdict(lambda: None)
 
+        # collect visited nodes (for visualization) 
+        visited = OrderedDict()
+        
         # initialize source node
         dist[self.src_hash] = 0
 
         # initialize Queue
         for node_hash in self.graph.nodes.keys():
-            Q.put((dist[node_hash], node_hash))
+            heappush(Q, (dist[node_hash], node_hash))
       
         # core dijkstra algorithm
-        while not Q.empty():
+        while len(Q) != 0:
             # get the node with the lowest cost
-            _,u = Q.get()
-            for v,c in self.graph.tree[u].items():
+            u_cost,u = heappop(Q)
+            visited[u] = u_cost
+
+            for v,v_cost in self.graph.tree[u].items():
+                # ignore already processed nodes
+                if v in visited.keys():
+                    continue
+
                 # update the weights of each child node
-                alt = dist[u] + c
+                alt = dist[u] + v_cost
                 if alt < dist[v]:
                     dist[v] = alt
                     prev[v] = u
-                    Q.put((dist[v],v))
+                    
+                    # update value
+                    heappush(Q,(dist[v],v))
 
         # set solution to class variables
         self._dist = dist
