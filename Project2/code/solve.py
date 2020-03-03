@@ -2,22 +2,38 @@
 
 import code
 import numpy as np
+import random
 from dijkstra.map import Map
 from dijkstra import node, graph, dijkstra, visualize
 
-if __name__ == "__main__":
+def get_random_node(map_):
+    """Get a random valid node within our workspace. 
+    """
+    x = y = -1 
+    while not map_.isvalid([x,y]):
+        x = random.randint(*map_.xbounds) 
+        y = random.randint(*map_.ybounds) 
+    return node.Node(np.array([x,y]))
 
-    # start and goal
-    start_node = node.Node(np.array([19,33]))
-    goal_node = node.Node(np.array([111,23]))
+
+if __name__ == "__main__":
 
     # dummy map (for testing)
     obstacle_map = Map(xbounds=[0,300],ybounds=[0,200])
 
+    # get a random start and goal
+    start_node = get_random_node(obstacle_map)
+    goal_node = get_random_node(obstacle_map)
+
+    print("Start node: {}".format(start_node))
+    print("Goal  node: {}".format(goal_node))
+
     # generate graph
+    print("Building search graph...")
     graph = graph.Graph(obstacle_map, start_node)
     
     # perform search (via Dijkstra's Algorithm)    
+    print("Solving for optimal path...")
     d = dijkstra.Dijkstra(graph, start_node)
     d.solve()
 
