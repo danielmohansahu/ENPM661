@@ -27,24 +27,25 @@ class Graph:
         
         current_nodes = [start_node] 
         while len(current_nodes) != 0:
-            print("Processing {} new nodes".format(len(current_nodes)))
             new_nodes = []
             for node in current_nodes:
                 node_hash = hash(node)
-               
-                # check return conditions
-                if node_hash in nodes.keys():
-                    # we've already explored this node
+                
+                # invalid node (obstacle or outside bounds)
+                if not self.map_.isvalid(node.vertices):
                     continue
-                elif not self.map_.isvalid(node.vertices):
-                    # invalid node (obstacle or outside bounds)
+                
+                # add valid nodes to our tree
+                if node.parent:
+                    tree[hash(node.parent)][node_hash] = node.cost2come - node.parent.cost2come
+               
+                # we've already explored this node
+                if node_hash in nodes.keys():
                     continue
 
                 # valid node; add it to our visited nodes
                 nodes[node_hash] = node
                 children = node.get_children()
-                if node.parent:
-                    tree[hash(node.parent)][node_hash] = node.cost2come - node.parent.cost2come
                 
                 # add children to be processed next round
                 new_nodes += children
