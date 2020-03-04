@@ -68,8 +68,8 @@ class Dijkstra:
         # set solution to class variables
         self._dist = dist
         self._prev = prev
+        self._visited = visited
     
-
     def get_path(self, dst):
         """Get the optimal path and cost to the given destination node.
         """
@@ -97,5 +97,29 @@ class Dijkstra:
 
         return path,cost 
 
+    def get_exploration(self, stop_on_goal=False, dst=None):
+        """Returns all the nodes that we explored (in order)
+        
+        Args:
+            stop_on_goal: Bool determining whether to return only up to the goal node.
+        """
+        # sanity check
+        if self._visited is None:
+            raise RuntimeError("Cannot return explored nodes; call `solve` first.")
+        if stop_on_goal and dst is None:
+            raise RuntimeError("If stop_on_goal is True a goal node must be provided.")
+
+        explored_nodes = []
+        explored_costs = []
+        for hash_, cost in self._visited.items():
+            explored_nodes.append(self.graph.nodes[hash_])
+            explored_costs.append(cost)
+
+            if stop_on_goal and self.graph.nodes[hash_]==dst:
+                break
+
+        return explored_nodes, explored_costs
             
+
+        
 

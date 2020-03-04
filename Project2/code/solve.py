@@ -3,8 +3,11 @@
 import code
 import numpy as np
 import random
+import time
 from dijkstra.map import Map
 from dijkstra import node, graph, dijkstra, visualize
+import matplotlib.pyplot as plt
+import matplotlib.cm as cm
 
 def get_random_node(map_):
     """Get a random valid node within our workspace. 
@@ -19,7 +22,7 @@ def get_random_node(map_):
 if __name__ == "__main__":
 
     # dummy map (for testing)
-    obstacle_map = Map(xbounds=[0,300],ybounds=[0,200])
+    obstacle_map = Map(xbounds=[0,30],ybounds=[0,20])
 
     # get a random start and goal
     start_node = get_random_node(obstacle_map)
@@ -40,8 +43,11 @@ if __name__ == "__main__":
     # get path to goal node
     path, cost = d.get_path(goal_node)
 
-    # visualize path
-    visualize.plot_path(path) 
-    
+    # visualize optimal path (and make video of exploration)
+    visualizer = visualize.ExplorationVisualizer(
+            obstacle_map, 
+            *d.get_exploration(True, goal_node)
+    ) 
+    visualizer.plot()
+    visualize.plot_path(obstacle_map, path) 
 
-    # code.interact(local=locals())
