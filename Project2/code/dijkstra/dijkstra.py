@@ -47,8 +47,15 @@ class Dijkstra:
       
         # core dijkstra algorithm
         while len(Q) != 0:
+
             # get the node with the lowest cost
             u_cost,u = heappop(Q)
+            
+            # ignore nodes we've already visited (they're invalid)
+            if u in visited.keys():
+                continue
+            
+            # mark as visited
             visited[u] = u_cost
 
             for v,v_cost in self.graph.tree[u].items():
@@ -88,7 +95,8 @@ class Dijkstra:
         while current_hash in self._prev.keys():
             path.append(current_hash)
             current_hash = self._prev[current_hash]
-        
+        path.append(self.src_hash)
+
         # reverse to give path from start to goal
         path.reverse()
 
