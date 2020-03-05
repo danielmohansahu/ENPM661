@@ -20,9 +20,11 @@ def get_random_node(map_):
 
 
 if __name__ == "__main__":
+    # Timing metadata
+    st = time.time()
 
     # dummy map (for testing)
-    obstacle_map = Map(xbounds=[0,30],ybounds=[0,20])
+    obstacle_map = Map(xbounds=[0,300],ybounds=[0,200])
 
     # get a random start and goal
     start_node = get_random_node(obstacle_map)
@@ -33,21 +35,30 @@ if __name__ == "__main__":
 
     # generate graph
     print("Building search graph...")
+    st_graph = time.time()
     graph = graph.Graph(obstacle_map, start_node)
+    print("Took {:.3f}s to build search graph.".format(time.time()-st_graph))
     
     # perform search (via Dijkstra's Algorithm)    
     print("Solving for optimal path...")
+    st_solve = time.time()
     d = dijkstra.Dijkstra(graph, start_node)
     d.solve()
+    print("Took {:.3f}s to solve for optimal path.".format(time.time()-st_solve))
 
     # get path to goal node
-    path, cost = d.get_path(goal_node)
+    optimal_path,_ = d.get_path(goal_node)
 
     # visualize optimal path (and make video of exploration)
+    # import code 
+    # code.interact(local=locals())
+
+    print("Took {:.3f} for all operations.".format(time.time()-st))
+
     visualizer = visualize.ExplorationVisualizer(
             obstacle_map, 
-            *d.get_exploration(True, goal_node)
+            *d.get_exploration(True, goal_node),
+            optimal_path
     ) 
     visualizer.plot()
-    visualize.plot_path(obstacle_map, path) 
 
