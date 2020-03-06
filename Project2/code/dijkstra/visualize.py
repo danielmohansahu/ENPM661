@@ -65,6 +65,10 @@ class ExplorationVisualizer:
         return self.ln,
 
     def _update(self,frame):
+        if frame==0:
+            # zero out data and start fresh
+            self.map_xdata = []
+            self.map_ydata = []
         
         # update X/Y data and plot 
         self.map_xdata.append(self.nodes[frame].vertices[0])
@@ -85,7 +89,6 @@ class ExplorationVisualizer:
             Y = [n.vertices[1] for n in self.optimal]
             plt.plot(X,Y)
 
-            # wait for user input
-            plt.waitforbuttonpress(timeout=-1)
+            plt.pause(60)
         
         return self.ln,
