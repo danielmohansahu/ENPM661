@@ -32,7 +32,7 @@ class Graph:
                 node_hash = hash(node)
                 
                 # invalid node (obstacle or outside bounds)
-                if not self.map_.isvalid(node.vertices):
+                if not self.map_.is_valid(node.vertices):
                     continue
                 
                 # add valid nodes to our tree
