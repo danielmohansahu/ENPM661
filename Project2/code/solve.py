@@ -17,7 +17,6 @@ def get_random_node(map_):
     while not map_.is_valid([x,y]):
         x = random.randint(bounds.x0,bounds.x1) 
         y = random.randint(bounds.y0,bounds.y1) 
-        print("Trying {},{}".format(x,y))
     return node.Node(np.array([x,y]))
 
 if __name__ == "__main__":
@@ -49,13 +48,9 @@ if __name__ == "__main__":
 
     # get path to goal node
     optimal_path,_ = d.get_path(goal_node)
-
-    # visualize optimal path (and make video of exploration)
-    # import code 
-    # code.interact(local=locals())
-
     print("Took {:.3f} for all operations.".format(time.time()-st))
 
+    # visualize optimal path (and make video of exploration)
     visualizer = visualize.ExplorationVisualizer(
             obstacle_map, 
             *d.get_exploration(True, goal_node),

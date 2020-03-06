@@ -11,8 +11,10 @@ class Map(ABC):
     """A base class used to define workspace bounds and obstacles."""
     def __init__(self, min_corner, max_corner):
         # The minimum and maximum bounds of our workspace
-        min_corner = np.array(min_corner)
-        max_corner = np.array(max_corner)
+        self.min_corner = np.array(min_corner)
+        self.max_corner = np.array(max_corner)
+        self.xbounds = [self.min_corner[0], self.max_corner[0]]
+        self.ybounds = [self.min_corner[1], self.max_corner[1]]
         self.workspace = mplPath.Path(np.array([
             min_corner, 
             [max_corner[0],min_corner[1]],
@@ -21,17 +23,17 @@ class Map(ABC):
             min_corner
         ]))
 
-    def is_in_workspace(self, pt):
+    def is_in_workspace(self, pt, buffer_=0):
         """Returns True if the given point is within our workspace."""
-        return self.workspace.contains_point(pt)
+        return self.workspace.contains_point(pt, radius=-(buffer_+1))
 
-    def is_valid(self, pt):
+    def is_valid(self, pt, buffer_=0):
         """Returns True if the given point is within our workspace and not an obstacle."""
-        return self.is_in_workspace(pt) and not self.is_obstacle(pt)
+        return self.is_in_workspace(pt, buffer_) and not self.is_obstacle(pt, buffer_)
 
-    def is_obstacle(self, pt):
+    def is_obstacle(self, pt, buffer_=0):
         """Returns True if the given point is in an obstacle."""
-        return any([(pt in obstacle) for obstacle in self.obstacles])
+        return any([obstacle.within(pt,buffer_) for obstacle in self.obstacles])
 
     def plot(self):
         """Plot our workspace (with obstacles)"""
