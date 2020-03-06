@@ -42,7 +42,8 @@ class ExplorationVisualizer:
         self.optimal = optimal
 
         # visualization variables
-        self.fig, self.ax = plt.subplots()
+        self.fig,self.ax = self.map_.plot()
+        self.ln, = plt.plot([],[],' .b')
         self.map_xdata, self.map_ydata = [],[]
 
     def plot(self):
@@ -51,41 +52,40 @@ class ExplorationVisualizer:
         ani = FuncAnimation(
                 self.fig, 
                 self._update,
-                interval=0,
+                interval=1,
+                init_func=self._init,
                 frames=range(len(self.nodes)),
                 blit=True)
         plt.show()
-    
+   
+    def _init(self):
+        # self.fig, self.ax = self.map_.plot()
+        plt.plot(*self.nodes[0].vertices,'*b')
+        plt.text(*self.nodes[0].vertices,"START")
+        return self.ln,
+
     def _update(self,frame):
-        # perform initialization
-        if frame == 0:
-            # draw map background
-            self.ln, = self.map_.plot()
-
-            # draw start node
-            plt.plot(*self.nodes[0].vertices,'*b')
-            plt.text(*self.nodes[0].vertices,"START")
-
-            # reset X/Y data and plot 
-            self.map_xdata = self.ln.get_xdata()
-            self.map_ydata = self.ln.get_ydata()
-            
-            # set data
-            self.ln.set_marker("*")
-            self.ln.set_markersize(4)
-            self.ln.set_linestyle(" ")
-
+        
         # update X/Y data and plot 
-        new_x = self.map_xdata + [self.nodes[frame].vertices[0]]
-        new_y = self.map_ydata + [self.nodes[frame].vertices[1]]
-        self.ln.set_data(new_x,new_y)
+        self.map_xdata.append(self.nodes[frame].vertices[0])
+        self.map_ydata.append(self.nodes[frame].vertices[1])
+        self.ln.set_data(self.map_xdata, self.map_ydata)
 
         # if this is the goal node also write that text
         #  and plot optimal path
         if frame == len(self.nodes)-1:
-            plot_path(self.map_, self.optimal)
+            self.ln.set_data([],[])
+
+            # add end node (with text)
+            plt.plot(*self.optimal[-1].vertices,'*r')
+            plt.text(*self.optimal[-1].vertices,"GOAL")
+
+            # convert node to X,Y list
+            X = [n.vertices[0] for n in self.optimal]
+            Y = [n.vertices[1] for n in self.optimal]
+            plt.plot(X,Y)
 
             # wait for user input
-            plt.waitforbuttonpress()
+            plt.waitforbuttonpress(timeout=-1)
         
         return self.ln,
