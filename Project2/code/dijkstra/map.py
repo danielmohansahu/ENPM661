@@ -1,105 +1,74 @@
 """Obstacle map
 """
-import cv2
+
+from abc import ABC, abstractmethod
 import numpy as np
 import matplotlib.path as mplPath
+from matplotlib import pyplot as plt
+from .obstacle import Polygon,Ellipse,Circle
 
-# placeholder
-class Map:
-    def __init__(self, xbounds=[0, 300], ybounds=[0, 200]):
-        self.xbounds = xbounds
-        self.ybounds = ybounds
+class Map(ABC):
+    """A base class used to define workspace bounds and obstacles."""
+    def __init__(self, min_corner, max_corner):
+        # The minimum and maximum bounds of our workspace
+        min_corner = np.array(min_corner)
+        max_corner = np.array(max_corner)
+        self.workspace = mplPath.Path(np.array([
+            min_corner, 
+            [max_corner[0],min_corner[1]],
+            max_corner,
+            [min_corner[0],max_corner[1]],
+            min_corner
+        ]))
 
-    def isvalid(self, vertex):
-        # return true if the given vertex is not an obstacle and is
-        #  within the workspace bounds
-        return ((self.xbounds[0] < vertex[0] < self.xbounds[1]) and (self.ybounds[0] < vertex[1] < self.ybounds[1]))
+    def is_in_workspace(self, pt):
+        """Returns True if the given point is within our workspace."""
+        return self.workspace.contains_point(pt)
 
-    # Drawing the obstacles and returning true if the vertex is not an obstacle
-    def obstacles(x,y):
+    def is_valid(self, pt):
+        """Returns True if the given point is within our workspace and not an obstacle."""
+        return self.is_in_workspace(pt) and not self.is_obstacle(pt)
 
-        BlankImage = 255 * np.ones(shape=[200, 300, 3], dtype=np.uint8)
-        # Window name in which image is displayed
-        map = 'Final Map'
+    def is_obstacle(self, pt):
+        """Returns True if the given point is in an obstacle."""
+        return any([(pt in obstacle) for obstacle in self.obstacles])
 
-        # Circular Obstacle
-        CirCenter = (225, 50) # Center coordinates of the circular obstacle
-        r = 25 # Radius of circular obstacle
-        Color = (0, 0, 0) # black color for the obstacle outline
-        # Draw a circular obstacle on the map
-        cv2.circle(BlankImage, CirCenter, r, Color, -1)
+    def plot(self):
+        """Plot our workspace (with obstacles)"""
+        fig, ax = plt.subplots(subplot_kw={'aspect': 'equal'})
 
-        # Elliptical Obstacle
-        ElCenter = (150, 100) # Center coordinates of the ellipse shaped obstacle
-        ElMajor = 40 # Major axis length of the ellipse
-        ElMinor = 20 # Minor axis length of the ellipse
-        # Draw an ellipse shaped obstacle on the map
-        cv2.ellipse(BlankImage, ElCenter, (ElMajor, ElMinor), 0, 0, 360, 0, -1)
+        # plot the workspace
+        ws_verts = self.workspace.vertices
+        plt.plot(ws_verts[:,0],ws_verts[:,1],'k')
 
-        # Polygon Obstacle
-        poly = np.array([[20, 80], [25, 15], [75, 15], [100, 50], [75,80], [50,50]], np.int32) # Vertices of the polygon
-        # Draw the polygon, True indicates it is a closed line polygon
-        cv2.polylines(BlankImage, [poly], True, Color)
-        cv2.fillPoly(BlankImage, [poly], (0,0,0))
+        # plot the obstacles
+        for obstacle in self.obstacles:
+            obstacle.plot(ax)
 
-        # Diamond shaped obstacle
-        Diamond = np.array([[225,190], [250,175], [225,160], [200,175]], np.int32) # Vertices of the diamond
-        # Draw the diamond shaped obstacle
-        cv2.polylines(BlankImage,[Diamond], True, Color)
-        cv2.fillPoly(BlankImage,[Diamond], color=(0, 0, 0))
+        return fig,ax
 
-        # The rectangular obstacle
-        for a in range(200):
-            for b in range(300):
-                j = a;
-                i = 200 - b
-                if i - (1.73) * j + 135 > 0 and i + (0.58) * j - 96.35 <= 0 and i - (1.73) * j - 15.54 <= 0 and i + (0.58) * j - 84.81 >= 0:
-                    BlankImage[b, a] = (0, 0, 0)
+class TestMap(Map):
+    def __init__(self):
+        super().__init__([0,0],[200,100])
 
-        def PointInsidePolygon(x, y, poly):
-            n = len(poly)
-            inside = False
-            p1x, p1y = poly[0]
-            for i in range(n + 1):
-                p2x, p2y = poly[i % n]
-                if y > min(p1y, p2y):
-                    if y <= max(p1y, p2y):
-                        if x <= max(p1x, p2x):
-                            if p1y != p2y:
-                                xinters = (y - p1y) * (p2x - p1x) / (p2y - p1y) + p1x
-                                if p1x == p2x or x <= xinters:
-                                    inside = not inside
-                    p1x, p1y = p2x, p2y
-            #print("Polygon",inside)
-            # If inside == True, then the point is inside the polygon
-            if inside == False:
-                return False
-            else:
-                return True
+        # add obstacles
+        self.obstacles = [
+            Polygon([[90,40],[90,60],[110,60],[110,40],[90,40]]),
+            Circle((160,50), 15)
+        ]
 
-        # Displaying the final map with obstacles
-        # cv2.imshow(map, BlankImage)
-        # cv2.waitKey(0)
-        # cv2.destroyAllWindows()
-
-        # If the vertices are inside the polygon returns true
-        InPolygon = PointInsidePolygon(x, y, poly)
-        #print("InPolygon", InPolygon)
-        InDiamond = PointInsidePolygon(x, y, Diamond)
-        #print("InDiamond", InDiamond)
-
-        # Equation of a circle is x**2 + y**2 = r**2, If we have x**2 + y**2 > r**2, vertex is not an obstacle
-        # Equation of an ellipse is (x**2 / a**2) + (y**2 / b**2) = 1, If we have (x**2 / a**2) + (y**2 / b**2) > 1, vertex is not an obstacle
-
-        if (((x** 2 + y** 2) > r ** 2) and (((x**2 / ElMajor**2) + (y**2 / ElMinor**2)) > 1) and (InPolygon == False) and (InDiamond == False)):
-            #print(x,y)
-            return True
-        elif(y - (1.73) * x + 135 > 0 and y + (0.58) * x - 96.35 <= 0 and y - (1.73) * x - 15.54 <= 0 and y + (0.58) * x - 84.81 >= 0):
-            return False
-        #print(x,y)
-        return False
-
-    # Function call - (10,190) is not an obstacle and (10,10) is an obstacle
-    # test = obstacles(10,190)
-    # print(test)
-
+class FinalMap(Map):
+    def __init__(self):
+        super().__init__([0,0],[300,200])
+        
+        # add obstacles
+        self.obstacles = [
+            Polygon([[20,120],[25,185],[75,185],[100,150],[75,120],[50,150],[20,120]]),
+            Polygon([[95,30],[95-75*np.cos(np.radians(30)), 30+75*np.sin(np.radians(30))],
+                     [95-75*np.cos(np.radians(30))+10*np.cos(np.radians(60)), 
+                        30+75*np.sin(np.radians(30))+np.sin(np.radians(60))],
+                     [95+10*np.cos(np.radians(60)), 30+10*np.sin(np.radians(60))],[95,30]]),
+            Ellipse((150,100),40,20),
+            Circle((225,150),25),
+            Polygon([[200,25],[225,40],[250,25],[225,10],[200,25]])
+        ]
