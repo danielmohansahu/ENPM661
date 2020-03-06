@@ -4,7 +4,7 @@ import code
 import numpy as np
 import random
 import time
-from dijkstra.map import Map
+from dijkstra.map import TestMap,FinalMap
 from dijkstra import node, graph, dijkstra, visualize
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
@@ -13,18 +13,19 @@ def get_random_node(map_):
     """Get a random valid node within our workspace. 
     """
     x = y = -1 
-    while not map_.isvalid([x,y]):
-        x = random.randint(*map_.xbounds) 
-        y = random.randint(*map_.ybounds) 
+    bounds = map_.workspace.get_extents()
+    while not map_.is_valid([x,y]):
+        x = random.randint(bounds.x0,bounds.x1) 
+        y = random.randint(bounds.y0,bounds.y1) 
+        print("Trying {},{}".format(x,y))
     return node.Node(np.array([x,y]))
-
 
 if __name__ == "__main__":
     # Timing metadata
     st = time.time()
 
     # dummy map (for testing)
-    obstacle_map = Map(xbounds=[0,300],ybounds=[0,200])
+    obstacle_map = TestMap()
 
     # get a random start and goal
     start_node = get_random_node(obstacle_map)
