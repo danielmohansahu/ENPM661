@@ -45,6 +45,7 @@ class ExplorationVisualizer:
         self.fig,self.ax = self.map_.plot()
         self.ln, = plt.plot([],[],' .b')
         self.map_xdata, self.map_ydata = [],[]
+        self.stop_running=False
 
     def plot(self):
         """Actually perform the visualization.
@@ -59,12 +60,17 @@ class ExplorationVisualizer:
         plt.show()
    
     def _init(self):
-        # self.fig, self.ax = self.map_.plot()
+        # add start and end node (with text)
         plt.plot(*self.nodes[0].vertices,'*b')
         plt.text(*self.nodes[0].vertices,"START")
+        plt.plot(*self.optimal[-1].vertices,'*r')
+        plt.text(*self.optimal[-1].vertices,"GOAL")
         return self.ln,
 
     def _update(self,frame):
+        if self.stop_running:
+            return self.ln,
+
         if frame==0:
             # zero out data and start fresh
             self.map_xdata = []
@@ -80,15 +86,11 @@ class ExplorationVisualizer:
         if frame == len(self.nodes)-1:
             self.ln.set_data([],[])
 
-            # add end node (with text)
-            plt.plot(*self.optimal[-1].vertices,'*r')
-            plt.text(*self.optimal[-1].vertices,"GOAL")
-
             # convert node to X,Y list
             X = [n.vertices[0] for n in self.optimal]
             Y = [n.vertices[1] for n in self.optimal]
-            plt.plot(X,Y)
+            self.ln, = plt.plot(X,Y)
 
-            plt.pause(60)
+            self.stop_running=True
         
         return self.ln,

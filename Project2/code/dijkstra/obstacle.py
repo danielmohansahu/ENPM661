@@ -48,7 +48,7 @@ class Ellipse(Obstacle):
     def within(self, pt, buffer_=0):
         # check if the equality is satisfied
         # https://math.stackexchange.com/questions/76457/check-if-a-point-is-within-an-ellipse
-        val = ((pt[0]-self.center[0])/(self.major+buffer_))**2.0 + ((pt[1]-self.center[1])/(self.minor+buffer_))**2.0
+        val = ((pt[0]-self.center[0])/(self.major/2+buffer_))**2.0 + ((pt[1]-self.center[1])/(self.minor/2+buffer_))**2.0
         return val <= 1
 
     def plot(self, ax):

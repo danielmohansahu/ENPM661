@@ -7,9 +7,12 @@ from .node import Node
 class Graph:
     """Iteratively build and store a graph of Nodes from a given start.
     """
-    def __init__(self, map_, start_node):
+    def __init__(self, map_, start_node, buffer_=0):
         # map of obstacle space; used to in collision detection
         self.map_ = map_
+
+        # buffer size to use (i.e. robot radius
+        self.buffer_ = buffer_
         
         # sanity check input
         if not isinstance(start_node, Node):
@@ -32,7 +35,7 @@ class Graph:
                 node_hash = hash(node)
                 
                 # invalid node (obstacle or outside bounds)
-                if not self.map_.is_valid(node.vertices):
+                if not self.map_.is_valid(node.vertices, self.buffer_):
                     continue
                 
                 # add valid nodes to our tree
