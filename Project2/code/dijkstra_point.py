@@ -1,42 +1,28 @@
 #!/usr/bin/env python3
-
-import code
-import numpy as np
-import random
+"""Solve for the optimal path with Dijkstra.
+"""
 import time
-from dijkstra.map import TestMap,FinalMap
+import numpy as np
+from dijkstra.map import FinalMap
 from dijkstra import node, graph, dijkstra, visualize
-import matplotlib.pyplot as plt
-import matplotlib.cm as cm
-
-def get_random_node(map_):
-    """Get a random valid node within our workspace. 
-    """
-    x = y = -1 
-    bounds = map_.workspace.get_extents()
-    while not map_.is_valid([x,y]):
-        x = random.randint(bounds.x0,bounds.x1) 
-        y = random.randint(bounds.y0,bounds.y1) 
-    return node.Node(np.array([x,y]))
 
 if __name__ == "__main__":
     # Timing metadata
     st = time.time()
 
     # dummy map (for testing)
-    obstacle_map = TestMap()
+    obstacle_map = FinalMap()
 
-    # get a random start and goal
-    start_node = get_random_node(obstacle_map)
-    goal_node = get_random_node(obstacle_map)
-
+    # start and goal nodes
+    start_node = node.Node(np.array([5,5]))
+    goal_node = node.Node(np.array([295,195]))
     print("Start node: {}".format(start_node))
     print("Goal  node: {}".format(goal_node))
 
     # generate graph
     print("Building search graph...")
     st_graph = time.time()
-    graph = graph.Graph(obstacle_map, start_node)
+    graph = graph.Graph(obstacle_map, start_node, buffer_=0)
     print("Took {:.3f}s to build search graph.".format(time.time()-st_graph))
     
     # perform search (via Dijkstra's Algorithm)    
