@@ -29,7 +29,8 @@ class Map(ABC):
 
     def is_valid(self, pt, buffer_=0):
         """Returns True if the given point is within our workspace and not an obstacle."""
-        return self.is_in_workspace(pt[:1], buffer_) and not self.is_obstacle(pt[:1], buffer_)
+        xy = pt[:2]
+        return self.is_in_workspace(xy, buffer_) and not self.is_obstacle(xy, buffer_)
 
     def is_obstacle(self, pt, buffer_=0):
         """Returns True if the given point is in an obstacle."""

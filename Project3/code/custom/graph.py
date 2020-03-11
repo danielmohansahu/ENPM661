@@ -33,7 +33,7 @@ class Graph:
             new_nodes = []
             for node in current_nodes:
                 node_hash = hash(node)
-                
+
                 # invalid node (obstacle or outside bounds)
                 if not self.map_.is_valid(node.vertices, self.buffer_):
                     continue

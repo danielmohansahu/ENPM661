@@ -20,9 +20,9 @@ class ActionSet:
         actions = {}
         for angle in self.angles:
             new_angle = vertices[2] + angle
-            new_x = vertices[0] + step_size * np.cos(new_angle)
-            new_y = vertices[1] + step_size * np.sin(new_angle)
-            actions[(new_x, new_y, new_angle)] = step_size
+            x_diff = self.step_size * np.cos(new_angle)
+            y_diff = self.step_size * np.sin(new_angle)
+            actions[(x_diff, y_diff, angle)] = self.step_size
         return actions
 
 class Node:

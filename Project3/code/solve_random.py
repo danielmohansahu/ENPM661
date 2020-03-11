@@ -16,7 +16,7 @@ def get_random_node(map_):
         x = random.randint(bounds.x0,bounds.x1) 
         y = random.randint(bounds.y0,bounds.y1) 
         theta = random.randint(0,360)*np.pi/180
-    return node.Node(np.array([x,y]))
+    return node.Node(np.array([x,y,theta]))
 
 if __name__ == "__main__":
     # Timing metadata
@@ -37,7 +37,7 @@ if __name__ == "__main__":
     st_graph = time.time()
     graph = graph.Graph(obstacle_map, start_node)
     print("Took {:.3f}s to build search graph.".format(time.time()-st_graph))
-    
+
     # perform search    
     print("Solving for optimal path...")
     st_solve = time.time()
