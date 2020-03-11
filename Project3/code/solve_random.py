@@ -10,11 +10,12 @@ from custom import node, graph, search, visualize
 def get_random_node(map_):
     """Get a random valid node within our workspace. 
     """
-    x = y = -1 
+    x = y = theta = -1
     bounds = map_.workspace.get_extents()
-    while not map_.is_valid([x,y]):
+    while not map_.is_valid([x,y,theta]):
         x = random.randint(bounds.x0,bounds.x1) 
         y = random.randint(bounds.y0,bounds.y1) 
+        theta = random.randint(0,360)*np.pi/180
     return node.Node(np.array([x,y]))
 
 if __name__ == "__main__":
