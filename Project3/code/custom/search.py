@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
-"""Core class implementing optimal path search via Dijkstra's algorithm.
+"""Core class implementing optimal path search via A*.
 
-https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm
+https://en.wikipedia.org/wiki/A*_search_algorithm
 """
+
 import numpy as np
 from heapq import heappush, heappop
 from collections import defaultdict, OrderedDict
 from .node import Node
 from .graph import Graph
 
-class Dijkstra:
+class AStar:
     def __init__(self, graph, src):
         # sanity checks
         if not isinstance(graph, Graph):

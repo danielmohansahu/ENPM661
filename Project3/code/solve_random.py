@@ -4,8 +4,8 @@ import code
 import numpy as np
 import random
 import time
-from dijkstra.map import TestMap,FinalMap
-from dijkstra import node, graph, dijkstra, visualize
+from custom.map import TestMap,FinalMap
+from custom import node, graph, search, visualize
 
 def get_random_node(map_):
     """Get a random valid node within our workspace. 
@@ -37,10 +37,10 @@ if __name__ == "__main__":
     graph = graph.Graph(obstacle_map, start_node)
     print("Took {:.3f}s to build search graph.".format(time.time()-st_graph))
     
-    # perform search (via Dijkstra's Algorithm)    
+    # perform search    
     print("Solving for optimal path...")
     st_solve = time.time()
-    d = dijkstra.Dijkstra(graph, start_node)
+    d = search.AStar(graph, start_node)
     d.solve()
     print("Took {:.3f}s to solve for optimal path.".format(time.time()-st_solve))
 
