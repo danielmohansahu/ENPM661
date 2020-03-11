@@ -68,7 +68,7 @@ class FinalMap(Map):
             Polygon([[20,120],[25,185],[75,185],[100,150],[75,120],[50,150],[20,120]]),
             Polygon([[95,30],[95-75*np.cos(np.radians(30)), 30+75*np.sin(np.radians(30))],
                      [95-75*np.cos(np.radians(30))+10*np.cos(np.radians(60)), 
-                        30+75*np.sin(np.radians(30))+np.sin(np.radians(60))],
+                        30+75*np.sin(np.radians(30))+10*np.sin(np.radians(60))],
                      [95+10*np.cos(np.radians(60)), 30+10*np.sin(np.radians(60))],[95,30]]),
             Ellipse((150,100),40,20),
             Circle((225,150),25),
