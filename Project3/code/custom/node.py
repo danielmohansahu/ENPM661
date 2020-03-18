@@ -3,10 +3,22 @@
 This class also defines the action set of a node.
 """
 
+import random
 import numpy as np
 
-class ActionSet:
+def get_random_node(map_):
+    """Get a random valid node within our workspace. 
     """
+    x = y = theta = -1
+    bounds = map_.workspace.get_extents()
+    while not map_.is_valid([x,y,theta]):
+        x = random.randint(bounds.x0,bounds.x1) 
+        y = random.randint(bounds.y0,bounds.y1) 
+        theta = random.randint(0,360)
+    return node.Node(np.array([x,y,theta]))
+
+class ActionSet:
+    """Class containing all the available node actions.
     """
     def __init__(self, step_size=1, angles=[-60, -30, 0, 30, 60]):
         """
@@ -28,15 +40,15 @@ class ActionSet:
 class Node:
     """
     """
-    # resolution of node directions (for binning)
+    # default resolution of node directions (for binning)
     resolution_ = (1, 1, 30)
 
-    # action set
+    # default action set
     action_set_ = ActionSet()
 
     def __init__(self, vertices, cost2come=0, parent=None):
         # vertices (x,y,theta) position of node
-        self.vertices = vertices
+        self.vertices = np.array(vertices)
         self.rounded_vertices = self.round(vertices)
 
         # cost2come; cumulative cost of getting to this node
@@ -65,11 +77,26 @@ class Node:
         return self.rounded_vertices == rhs.rounded_vertices
 
     @classmethod
-    def round(cls, vertices):
+    def set_actionset(cls, actionset):
+        """Set the action set (for all Nodes)
+        """
+        if not isinstance(actionset, ActionSet):
+            raise RuntimeError("Given actionset is of the wrong class.")
+        cls.action_set = actionset
+
+    @classmethod
+    def set_resolution(cls, resolution):
+        """Set the class resolution.
+        """
+        if len(resolution) != 3:
+            raise RuntimeError("Expected resolution to have length 3 (x, y, theta).")
+        cls.resolution_ = resolution
+
+    def round(self, vertices):
         """Round the given vertices (x,y,theta) to the class's resolution.
         """
         result = [] 
-        for val, res in zip(vertices, cls.resolution_):
+        for val, res in zip(vertices, self.resolution_):
             result.append(round(val/res)*res)
         return result
 
