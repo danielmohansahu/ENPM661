@@ -8,7 +8,7 @@ import numpy as np
 class ActionSet:
     """
     """
-    def __init__(self, step_size=1, angles=[-np.pi/3, -np.pi/6, 0, np.pi/6, np.pi/3]):
+    def __init__(self, step_size=1, angles=[-60, -30, 0, 30, 60]):
         """
         """
         self.angles = angles
@@ -19,9 +19,9 @@ class ActionSet:
         """
         actions = {}
         for angle in self.angles:
-            new_angle = vertices[2] + angle
-            x_diff = self.step_size * np.cos(new_angle)
-            y_diff = self.step_size * np.sin(new_angle)
+            new_angle = (vertices[2] + angle)%360
+            x_diff = self.step_size * np.cos(new_angle*np.pi/180)
+            y_diff = self.step_size * np.sin(new_angle*np.pi/180)
             actions[(x_diff, y_diff, angle)] = self.step_size
         return actions
 
@@ -29,7 +29,7 @@ class Node:
     """
     """
     # resolution of node directions (for binning)
-    resolution_ = (0.5, 0.5, 30*np.pi/180)
+    resolution_ = (1, 1, 30)
 
     # action set
     action_set_ = ActionSet()
@@ -55,14 +55,14 @@ class Node:
     def __str__(self):
         """String representation (for debugging / convenience)
         """
-        return str(self.vertices)
+        return str(self.rounded_vertices)
     
     def __eq__(self, rhs):
         """Comparison to other nodes.
         """
         if not isinstance(rhs, Node):
             raise RuntimeError("Cannot compare nodes to non-nodes")
-        return all(self.vertices == rhs.vertices)
+        return self.rounded_vertices == rhs.rounded_vertices
 
     @classmethod
     def round(cls, vertices):
@@ -73,6 +73,11 @@ class Node:
             result.append(round(val/res)*res)
         return result
 
+    def cost2go(self, goal_node):
+        """Calculate the euclidean distance to the target node.
+        """
+        return np.linalg.norm(self.vertices[:2]-goal_node.vertices[:2])
+
     def get_children(self):
         """Generate and return a list of all possible child nodes.
 
@@ -80,13 +85,13 @@ class Node:
         and obstacles.
         """
         children = []
-        for action, cost in self.action_set_.get_actions(self.vertices).items(): 
+        actions = self.action_set_.get_actions(self.vertices)
+
+        for action, cost in actions.items(): 
             # calculate child position and cost and store in a new node
-            child = Node(
-                self.vertices + np.array(action),
-                self.cost2come + cost,
-                self
-            )
+            new_vertices = self.vertices + np.array(action)
+            new_vertices[2] %= 360
+            child = Node(new_vertices, self.cost2come + cost, self)
 
             # small optimization; don't return parent node
             if (not self.parent) or child != self.parent:
