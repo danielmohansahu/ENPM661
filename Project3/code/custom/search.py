@@ -25,7 +25,7 @@ class AStar:
         self._dist = None
         self._prev = None
 
-    def solve(self):
+    def solve(self, goal_node):
         """Find the shortest path from source to target in the
         given graph.
         """
@@ -33,6 +33,7 @@ class AStar:
         Q = []
         
         # construct dicts of distances / predecessors
+        #  dist is cost2come
         dist = defaultdict(lambda: np.inf)
         prev = defaultdict(lambda: None)
 
@@ -49,7 +50,7 @@ class AStar:
         # core dijkstra algorithm
         while len(Q) != 0:
 
-            # get the node with the lowest cost
+            # get the node with the lowest cost2come + cost2go
             u_cost,u = heappop(Q)
             
             # ignore nodes we've already visited (they're invalid)
@@ -59,19 +60,21 @@ class AStar:
             # mark as visited
             visited[u] = u_cost
 
+            # get all child nodes (and relative cost)
             for v,v_cost in self.graph.tree[u].items():
                 # ignore already processed nodes
                 if v in visited.keys():
                     continue
 
                 # update the weights of each child node
-                alt = dist[u] + v_cost
+                alt = dist[u] + v_cost 
                 if alt < dist[v]:
-                    dist[v] = alt
+                    dist[v] = alt 
                     prev[v] = u
-                    
+                    + self.graph.nodes[v].cost2go(goal_node)
                     # update value
-                    heappush(Q,(dist[v],v))
+                    total_cost = dist[v] + self.graph.nodes[v].cost2go(goal_node)
+                    heappush(Q,(total_cost,v))
 
         # set solution to class variables
         self._dist = dist
