@@ -17,10 +17,10 @@ def plot_path(map_, path, show=False):
     map_.plot()
 
     # add start end end nodes (with text)
-    plt.plot(*path[0].vertices,'*b')
-    plt.text(*path[0].vertices,"START")
-    plt.plot(*path[-1].vertices,'*r')
-    plt.text(*path[-1].vertices,"GOAL")
+    plt.plot(*path[0].vertices[:2],'*b')
+    plt.text(*path[0].vertices[:2],"START")
+    plt.plot(*path[-1].vertices[:2],'*r')
+    plt.text(*path[-1].vertices[:2],"GOAL")
 
     # convert node to X,Y list
     X = [n.vertices[0] for n in path]
@@ -61,10 +61,10 @@ class ExplorationVisualizer:
    
     def _init(self):
         # add start and end node (with text)
-        plt.plot(*self.nodes[0].vertices,'*b')
-        plt.text(*self.nodes[0].vertices,"START")
-        plt.plot(*self.optimal[-1].vertices,'*r')
-        plt.text(*self.optimal[-1].vertices,"GOAL")
+        plt.plot(*self.nodes[0].vertices[:2],'*b')
+        plt.text(*self.nodes[0].vertices[:2],"START")
+        plt.plot(*self.optimal[-1].vertices[:2],'*r')
+        plt.text(*self.optimal[-1].vertices[:2],"GOAL")
         return self.ln,
 
     def _update(self,frame):
