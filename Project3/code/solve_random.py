@@ -1,53 +1,66 @@
 #!/usr/bin/env python3
 
-import code
-import numpy as np
-import random
-import time
+import argparse
 from custom.map import TestMap,FinalMap
 from custom import node, graph, search, visualize
 
-def get_random_node(map_):
-    """Get a random valid node within our workspace. 
-    """
-    x = y = theta = -1
-    bounds = map_.workspace.get_extents()
-    while not map_.is_valid([x,y,theta]):
-        x = random.randint(bounds.x0,bounds.x1) 
-        y = random.randint(bounds.y0,bounds.y1) 
-        theta = random.randint(0,360)
-    return node.Node(np.array([x,y,theta]))
+# default inputs
+DEFAULT_START=[5, 5, 30]
+DEFAULT_GOAL=[195, 95, 330]
+DEFAULT_CLEARANCE=0
+DEFAULT_RADIUS=0
+DEFAULT_STEP_SIZE=1
+DEFAULT_THETA_RES=30
+DEFAULT_X_RES=0.5
+DEFAULT_Y_RES=0.5
+
+def parse_args():
+    parser = argparse.ArgumentParser(description="Solve for an optimal path via A*.") 
+    parser.add_argument("-s", "--start", default=DEFAULT_START, help="Starting node indices.")
+    parser.add_argument("-g", "--goal", default=DEFAULT_GOAL, help="Goal node indices.")
+    parser.add_argument("-c", "--clearance", default=DEFAULT_CLEARANCE, help="Obstacle avoidance clearance.")
+    parser.add_argument("-r", "--radius", default=DEFAULT_RADIUS, help="Robot radius.")
+    parser.add_argument("-S", "--step-size", default=DEFAULT_STEP_SIZE, help="Movement step size.")
+    parser.add_argument("-t", "--theta-res", default=DEFAULT_THETA_RES, help="Theta movement resolution.")
+    parser.add_argument("-x", "--x-res", default=DEFAULT_X_RES, help="X movement resolution.")
+    parser.add_argument("-y", "--y-res", default=DEFAULT_Y_RES, help="Y movemement resolution.")
+    return parser.parse_args()
 
 if __name__ == "__main__":
-    # Timing metadata
-    st = time.time()
+    # get input arguments
+    args = parse_args()
 
-    # dummy map (for testing)
-    obstacle_map = TestMap()
+    # generate obstacle map
+    obstacle_map = FinalMap()
 
-    # get a random start and goal
-    start_node = get_random_node(obstacle_map)
-    goal_node = get_random_node(obstacle_map)
+    # Set node class variables based on inputs
+    action_set = node.ActionSet(args.step_size,[args.theta_res*v for v in [-2,-1,0,1,1]])
+    resolution = (args.x_res, args.y_res, args.theta_res)
+    node.Node.set_actionset(action_set)
+    node.Node.set_resolution(resolution)
+
+    # create start and goal nodes
+    if not obstacle_map.is_valid(args.start):
+        raise RuntimeError("Invalid start node: {}".format(args.start))
+    if not obstacle_map.is_valid(args.goal):
+        raise RuntimeError("Invalid goal node: {}".format(args.goal))
+    start_node = node.Node(args.start)
+    goal_node = node.Node(args.goal)
 
     print("Start node: {}".format(start_node))
     print("Goal  node: {}".format(goal_node))
 
     # generate graph
-    print("Building search graph...")
-    st_graph = time.time()
-    graph = graph.Graph(obstacle_map, start_node)
-    print("Took {:.3f}s to build search graph.".format(time.time()-st_graph))
+    print("Generating graph...")
+    graph = graph.Graph(obstacle_map, start_node, buffer_=args.radius + args.clearance)
 
     # perform search    
-    print("Solving for optimal path...")
-    st_solve = time.time()
+    print("Performing A* search...")
     d = search.AStar(graph, start_node)
     d.solve(goal_node)
-    print("Took {:.3f}s to solve for optimal path.".format(time.time()-st_solve))
 
     # get path to goal node
     optimal_path,_ = d.get_path(goal_node)
-    print("Took {:.3f} for all operations.".format(time.time()-st))
 
     # visualize optimal path (and make video of exploration)
     visualizer = visualize.ExplorationVisualizer(
