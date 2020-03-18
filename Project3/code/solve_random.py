@@ -15,7 +15,7 @@ def get_random_node(map_):
     while not map_.is_valid([x,y,theta]):
         x = random.randint(bounds.x0,bounds.x1) 
         y = random.randint(bounds.y0,bounds.y1) 
-        theta = random.randint(0,360)*np.pi/180
+        theta = random.randint(0,360)
     return node.Node(np.array([x,y,theta]))
 
 if __name__ == "__main__":
@@ -42,7 +42,7 @@ if __name__ == "__main__":
     print("Solving for optimal path...")
     st_solve = time.time()
     d = search.AStar(graph, start_node)
-    d.solve()
+    d.solve(goal_node)
     print("Took {:.3f}s to solve for optimal path.".format(time.time()-st_solve))
 
     # get path to goal node
