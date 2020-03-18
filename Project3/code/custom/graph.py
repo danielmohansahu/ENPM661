@@ -1,6 +1,7 @@
 """Class representing the Graph of Nodes (derived via BFS)
 """
 import time
+import sys
 from collections import defaultdict
 from .node import Node
 
@@ -18,9 +19,16 @@ class Graph:
         if not isinstance(start_node, Node):
             raise ValueError("Start node given to Graph isn't a Node object.")
 
+        # calculate total possible number of nodes (for reference)
+        self.max_nodes = map_.xbounds[-1]/start_node.resolution_[0]\
+                         * map_.ybounds[-1]/start_node.resolution_[1]\
+                         * 360/start_node.resolution_[2]
+
         # nodes: dict of explored nodes (key: value) -> (hash: node)
         # tree: hierarchical relationships between nodes (parent: children)
+        st = time.time()
         self.nodes, self.tree = self.construct(start_node)
+        print("Took {:.3f}s to build search graph.".format(time.time()-st))
 
     def construct(self, start_node):
         """Build out the set of Nodes, starting from our start node.
@@ -30,7 +38,6 @@ class Graph:
         
         current_nodes = [start_node] 
         while len(current_nodes) != 0:
-            st = time.time()
             new_nodes = []
             for node in current_nodes:
                 node_hash = hash(node)
@@ -54,7 +61,11 @@ class Graph:
                 # add children to be processed next round
                 new_nodes += children
 
-            print("Processed {}/{} nodes in {}, {} more found.".format(len(current_nodes),len(nodes),time.time()-st,len(new_nodes)))
+            # update status bar
+            sys.stdout.write('\r')
+            sys.stdout.write("[%-20s] %d%%" % ('='*int(20*len(nodes)/self.max_nodes), int(100*len(nodes)/self.max_nodes)))
+            sys.stdout.flush()
+
             current_nodes = new_nodes
         return nodes, tree
 

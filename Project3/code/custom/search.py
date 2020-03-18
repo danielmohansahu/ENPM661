@@ -4,6 +4,7 @@
 https://en.wikipedia.org/wiki/A*_search_algorithm
 """
 
+import time
 import numpy as np
 from heapq import heappush, heappop
 from collections import defaultdict, OrderedDict
@@ -29,6 +30,8 @@ class AStar:
         """Find the shortest path from source to target in the
         given graph.
         """
+        st = time.time()
+
         # construct queue of vertices
         Q = []
         
@@ -80,6 +83,7 @@ class AStar:
         self._dist = dist
         self._prev = prev
         self._visited = visited
+        print("Took {:.3f}s to solve for optimal path.".format(time.time()-st))
     
     def get_path(self, dst):
         """Get the optimal path and cost to the given destination node.
