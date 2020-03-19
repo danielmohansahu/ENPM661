@@ -48,7 +48,7 @@ class ExplorationVisualizer:
         self.stop_running=False
 
         # misc variables
-        self.max_size = 500
+        self.max_size = 200
 
     def plot(self):
         """Actually perform the visualization.

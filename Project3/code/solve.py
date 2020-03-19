@@ -16,8 +16,8 @@ DEFAULT_Y_RES=0.5
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Solve for an optimal path via A*.") 
-    parser.add_argument("-s", "--start", default=DEFAULT_START, help="Starting node indices.")
-    parser.add_argument("-g", "--goal", default=DEFAULT_GOAL, help="Goal node indices.")
+    parser.add_argument("-s", "--start", default=DEFAULT_START, nargs='+', type=int, help="Starting node indices.")
+    parser.add_argument("-g", "--goal", default=DEFAULT_GOAL, nargs='+', type=int, help="Goal node indices.")
     parser.add_argument("-c", "--clearance", default=DEFAULT_CLEARANCE, type=float, help="Obstacle avoidance clearance.")
     parser.add_argument("-r", "--radius", default=DEFAULT_RADIUS, type=float, help="Robot radius.")
     parser.add_argument("-S", "--step-size", default=DEFAULT_STEP_SIZE, type=int, help="Movement step size.")
@@ -40,9 +40,9 @@ if __name__ == "__main__":
     node.Node.set_resolution(resolution)
 
     # create start and goal nodes
-    if not obstacle_map.is_valid(args.start):
+    if len(args.start) != 3 or not obstacle_map.is_valid(args.start):
         raise RuntimeError("Invalid start node: {}".format(args.start))
-    if not obstacle_map.is_valid(args.goal):
+    if len(args.goal) != 3 or not obstacle_map.is_valid(args.goal):
         raise RuntimeError("Invalid goal node: {}".format(args.goal))
     start_node = node.Node(args.start)
     goal_node = node.Node(args.goal)
