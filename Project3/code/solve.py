@@ -18,12 +18,12 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Solve for an optimal path via A*.") 
     parser.add_argument("-s", "--start", default=DEFAULT_START, help="Starting node indices.")
     parser.add_argument("-g", "--goal", default=DEFAULT_GOAL, help="Goal node indices.")
-    parser.add_argument("-c", "--clearance", default=DEFAULT_CLEARANCE, help="Obstacle avoidance clearance.")
-    parser.add_argument("-r", "--radius", default=DEFAULT_RADIUS, help="Robot radius.")
-    parser.add_argument("-S", "--step-size", default=DEFAULT_STEP_SIZE, help="Movement step size.")
-    parser.add_argument("-t", "--theta-res", default=DEFAULT_THETA_RES, help="Theta movement resolution.")
-    parser.add_argument("-x", "--x-res", default=DEFAULT_X_RES, help="X movement resolution.")
-    parser.add_argument("-y", "--y-res", default=DEFAULT_Y_RES, help="Y movemement resolution.")
+    parser.add_argument("-c", "--clearance", default=DEFAULT_CLEARANCE, type=float, help="Obstacle avoidance clearance.")
+    parser.add_argument("-r", "--radius", default=DEFAULT_RADIUS, type=float, help="Robot radius.")
+    parser.add_argument("-S", "--step-size", default=DEFAULT_STEP_SIZE, type=int, help="Movement step size.")
+    parser.add_argument("-t", "--theta-res", default=DEFAULT_THETA_RES, type=float, help="Theta movement resolution.")
+    parser.add_argument("-x", "--x-res", default=DEFAULT_X_RES, type=float, help="X movement resolution.")
+    parser.add_argument("-y", "--y-res", default=DEFAULT_Y_RES, type=float, help="Y movemement resolution.")
     return parser.parse_args()
 
 if __name__ == "__main__":

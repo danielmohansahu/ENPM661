@@ -67,6 +67,7 @@ class Graph:
             sys.stdout.flush()
 
             current_nodes = new_nodes
+        print()
         return nodes, tree
 
 
