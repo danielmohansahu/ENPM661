@@ -43,9 +43,12 @@ class ExplorationVisualizer:
 
         # visualization variables
         self.fig,self.ax = self.map_.plot()
-        self.ln, = plt.plot([],[],' .b')
+        self.ln, = plt.plot([],[],' .b', markersize=1)
         self.map_xdata, self.map_ydata = [],[]
         self.stop_running=False
+
+        # misc variables
+        self.max_size = 500
 
     def plot(self):
         """Actually perform the visualization.
@@ -79,6 +82,13 @@ class ExplorationVisualizer:
         # update X/Y data and plot 
         self.map_xdata.append(self.nodes[frame].vertices[0])
         self.map_ydata.append(self.nodes[frame].vertices[1])
+        
+        # only keep the last N values 
+        if len(self.map_xdata) > self.max_size:
+            self.map_xdata.pop(0)
+            self.map_ydata.pop(0)
+
+        # set updated data
         self.ln.set_data(self.map_xdata, self.map_ydata)
 
         # if this is the goal node also write that text
