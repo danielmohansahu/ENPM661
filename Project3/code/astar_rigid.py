@@ -5,10 +5,10 @@ from custom.map import TestMap,FinalMap
 from custom import node, graph, search, visualize
 
 # default inputs
-DEFAULT_START=[5, 5, 30]
-DEFAULT_GOAL=[195, 95, 330]
-DEFAULT_CLEARANCE=0
-DEFAULT_RADIUS=0
+DEFAULT_START=[50, 30, 60]
+DEFAULT_GOAL=[150, 150, 60]
+DEFAULT_CLEARANCE=1
+DEFAULT_RADIUS=1
 DEFAULT_STEP_SIZE=1
 DEFAULT_THETA_RES=30
 DEFAULT_X_RES=0.5
