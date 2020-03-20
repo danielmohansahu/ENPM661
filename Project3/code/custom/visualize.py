@@ -4,7 +4,7 @@
 from .node import Node
 import numpy as np
 from matplotlib import pyplot as plt
-from matplotlib.animation import FuncAnimation
+from matplotlib.animation import FuncAnimation, writers
 
 def plot_path(map_, path, show=False):
     """Visualize the given optimal path in the given map_.
@@ -30,7 +30,6 @@ def plot_path(map_, path, show=False):
     if show:
         plt.show()
 
-
 class ExplorationVisualizer:
     """Helper class to generate visualization of node exploration.
     """
@@ -50,16 +49,30 @@ class ExplorationVisualizer:
         # misc variables
         self.max_size = 200
 
-    def plot(self):
+    def plot(self, save=True):
         """Actually perform the visualization.
         """
         ani = FuncAnimation(
                 self.fig, 
                 self._update,
                 interval=1,
+                repeat=False,
+                repeat_delay=10,
                 init_func=self._init,
                 frames=range(len(self.nodes)),
                 blit=True)
+
+        if save and "ffmpeg" in writers.list():
+            # save to a local video file
+            print("Saving video to `results.mp4`...")
+            Writer = writers["ffmpeg"]
+            writer = Writer(fps=100, metadata=dict(artist="Me"), bitrate=1800)
+            ani.save("results.mp4", writer=writer)
+            return
+        elif save and "ffmpeg" not in writers.list():
+            print("Unable to create video file; ffmpeg is not installed.")
+            
+        # if we've made it this far we want to display the video
         plt.show()
    
     def _init(self):
