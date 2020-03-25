@@ -2,16 +2,16 @@
 
 ## Usage:
 
-The code to solve for a Point Robot can be run via:
+The code to solve for a Point Robot can be run via the following (`-s` indicates the location of the start node and `-g` that of the goal node.):
 
 ```bash
-./dijkstra_point.py
+./dijkstra_point.py -s 5 5 -g 295 195
 ```
 
-The corresponding code for a rigid robot can be run via:
+The corresponding code for a rigid robot can be run via the following (`-r` is the deisred robot radius and `-c` is the desired clearance.):
 
 ```bash
-./dijkstra_rigid.py
+./dijkstra_rigid.py -s 5 5 -g 295 195 -r 2 -c 3
 ```
 
 Both scripts will attempt to solve the same path problem of determining 
