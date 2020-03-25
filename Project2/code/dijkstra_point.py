@@ -2,20 +2,38 @@
 """Solve for the optimal path with Dijkstra.
 """
 import time
+import argparse
 import numpy as np
 from dijkstra.map import FinalMap
 from dijkstra import node, graph, dijkstra, visualize
+
+# default inputs
+DEFAULT_START=[5,5]
+DEFAULT_GOAL=[295,195]
+
+def parse_args():
+    parser = argparse.ArgumentParser(description="Solve for an optimal path via Dijkstra.") 
+    parser.add_argument("-s", "--start", default=DEFAULT_START, nargs='+', type=int, help="Starting node indices.")
+    parser.add_argument("-g", "--goal", default=DEFAULT_GOAL, nargs='+', type=int, help="Goal node indices.")
+    return parser.parse_args()
 
 if __name__ == "__main__":
     # Timing metadata
     st = time.time()
 
+    # get args
+    args = parse_args()
+
     # dummy map (for testing)
     obstacle_map = FinalMap()
 
     # start and goal nodes
-    start_node = node.Node(np.array([5,5]))
-    goal_node = node.Node(np.array([295,195]))
+    if len(args.start) != 2 or not obstacle_map.is_valid(args.start):
+        raise RuntimeError("Invalid start node: {}".format(args.start))
+    if len(args.goal) != 2 or not obstacle_map.is_valid(args.goal):
+        raise RuntimeError("Invalid goal node: {}".format(args.goal))
+    start_node = node.Node(np.array(args.start))
+    goal_node = node.Node(np.array(args.goal))
     print("Start node: {}".format(start_node))
     print("Goal  node: {}".format(goal_node))
 
