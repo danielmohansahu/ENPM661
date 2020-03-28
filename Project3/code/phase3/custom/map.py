@@ -50,28 +50,17 @@ class Map(ABC):
 
         return fig,ax
 
-class TestMap(Map):
-    def __init__(self):
-        super().__init__([0,0],[200,100])
-
-        # add obstacles
-        self.obstacles = [
-            Polygon([[90,40],[90,60],[110,60],[110,40],[90,40]]),
-            Circle((160,50), 15)
-        ]
-
 class FinalMap(Map):
     def __init__(self):
-        super().__init__([0,0],[300,200])
+        super().__init__([-5,-5],[5,5])
         
         # add obstacles
         self.obstacles = [
-            Polygon([[20,120],[25,185],[75,185],[100,150],[75,120],[50,150],[20,120]]),
-            Polygon([[95,30],[95-75*np.cos(np.radians(30)), 30+75*np.sin(np.radians(30))],
-                     [95-75*np.cos(np.radians(30))+10*np.cos(np.radians(60)), 
-                        30+75*np.sin(np.radians(30))+10*np.sin(np.radians(60))],
-                     [95+10*np.cos(np.radians(60)), 30+10*np.sin(np.radians(60))],[95,30]]),
-            Ellipse((150,100),40,20),
-            Circle((225,150),25),
-            Polygon([[200,25],[225,40],[250,25],[225,10],[200,25]])
+            Polygon([[-2.75,3.75],[-1.25,3.75],[-1.25,2.25],[-2.75,2.25]]),
+            Circle((2,3),2),
+            Polygon([[-4.75,-0.75],[-4.75,0.75],[-3.25,0.75],[-3.25,-0.75]]),
+            Circle((0,0),2),
+            Polygon([[3.25,-0.75],[3.25,0.75],[4.75,0.75],[4.75,-0.75]]),
+            Circle((-2,-3),2),
+            Circle((2,-3),2)
         ]
