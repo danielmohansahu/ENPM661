@@ -1,22 +1,23 @@
 #!/usr/bin/env python3
 
+import sys
 import argparse
 from custom.map import FinalMap
 from custom import node, graph, search, visualize
 
 # default inputs
 DEFAULT_START=[-4, -4, 60]
-DEFAULT_GOAL=[4, 4, 60]
-DEFAULT_RPM1=1
-DEFAULT_RPM2=1
-DEFAULT_CLEARANCE=1
-DEFAULT_RADIUS=1
-DEFAULT_WHEEL_RADIUS=0.5
-DEFAULT_WHEEL_SEPARATION=0.5
-DEFAULT_TIMESTEP=0.01
+DEFAULT_GOAL=[4, 4]
+DEFAULT_RPM1=100
+DEFAULT_RPM2=100
+DEFAULT_CLEARANCE=0.1
+DEFAULT_RADIUS=0.1
+DEFAULT_WHEEL_RADIUS=0.076/2
+DEFAULT_WHEEL_SEPARATION=0.354
+DEFAULT_TIMESTEP=0.1
 DEFAULT_THETA_RES=30
-DEFAULT_X_RES=0.5
-DEFAULT_Y_RES=0.5
+DEFAULT_X_RES=0.1
+DEFAULT_Y_RES=0.1
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Solve for an optimal path via A*.") 
@@ -50,14 +51,15 @@ if __name__ == "__main__":
     resolution = (args.x_res, args.y_res, args.theta_res)
     node.Node.set_actionset(action_set)
     node.Node.set_resolution(resolution)
+    node.Node.set_hash_offset(obstacle_map.size()+[0])
 
     # create start and goal nodes
-    if len(args.start) != 3 or not obstacle_map.is_valid(args.start):
+    if len(args.start) != 3 or not obstacle_map.is_valid(args.start, args.radius+args.clearance):
         raise RuntimeError("Invalid start node: {}".format(args.start))
-    if len(args.goal) != 3 or not obstacle_map.is_valid(args.goal):
+    if len(args.goal) != 2 or not obstacle_map.is_valid(args.goal+[0], args.radius+args.clearance):
         raise RuntimeError("Invalid goal node: {}".format(args.goal))
     start_node = node.Node(args.start)
-    goal_node = node.Node(args.goal)
+    goal_node = node.Node(args.goal+[0])
 
     print("Start node: {}".format(start_node))
     print("Goal  node: {}".format(goal_node))
@@ -69,10 +71,12 @@ if __name__ == "__main__":
     # perform search    
     print("Performing A* search...")
     d = search.AStar(graph, start_node)
-    d.solve(goal_node)
+    if not d.solve(goal_node, goal_tolerance=1.0):
+        print("Failed to find a path to the goal node.")
+        sys.exit(1)
 
     # get path to goal node
-    optimal_path,_ = d.get_path(goal_node)
+    optimal_path,_ = d.get_path()
 
     # visualize optimal path (and make video of exploration)
     visualizer = visualize.ExplorationVisualizer(
