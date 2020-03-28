@@ -42,12 +42,14 @@ class ExplorationVisualizer:
 
         # visualization variables
         self.fig,self.ax = self.map_.plot()
-        self.ln, = plt.plot([],[],' .b', markersize=1)
-        self.map_xdata, self.map_ydata = [],[]
-        self.stop_running=False
+        self.ln = plt.quiver([],[],[],[],angles='xy')
+        self.x_data = []
+        self.y_data = []
+        self.u_data = []
+        self.v_data = []
 
         # misc variables
-        self.max_size = 200
+        self.max_size = 1000
 
     def plot(self, save=True):
         """Actually perform the visualization.
@@ -55,7 +57,7 @@ class ExplorationVisualizer:
         ani = FuncAnimation(
                 self.fig, 
                 self._update,
-                interval=10,
+                interval=1,
                 repeat=False,
                 repeat_delay=10,
                 init_func=self._init,
@@ -84,36 +86,34 @@ class ExplorationVisualizer:
         return self.ln,
 
     def _update(self,frame):
-        if self.stop_running:
+        
+        # skip the first node (it has no parent)
+        if not self.nodes[frame].parent:
             return self.ln,
 
-        if frame==0:
-            # zero out data and start fresh
-            self.map_xdata = []
-            self.map_ydata = []
-        
         # update X/Y data and plot 
-        self.map_xdata.append(self.nodes[frame].vertices[0])
-        self.map_ydata.append(self.nodes[frame].vertices[1])
+        self.x_data.append(self.nodes[frame].parent.vertices[0])
+        self.y_data.append(self.nodes[frame].parent.vertices[1])
+        self.u_data.append(self.nodes[frame].vertices[0]-self.x_data[-1])
+        self.v_data.append(self.nodes[frame].vertices[1]-self.y_data[-1])
         
         # only keep the last N values 
-        if len(self.map_xdata) > self.max_size:
-            self.map_xdata.pop(0)
-            self.map_ydata.pop(0)
+        if len(self.x_data) > self.max_size:
+            self.x_data.pop(0)
+            self.y_data.pop(0)
+            self.u_data.pop(0)
+            self.v_data.pop(0)
 
         # set updated data
-        self.ln.set_data(self.map_xdata, self.map_ydata)
+        self.ln = plt.quiver(self.x_data, self.y_data, self.u_data, self.v_data, angles='xy')
 
         # if this is the goal node also write that text
         #  and plot optimal path
         if frame == len(self.nodes)-1:
-            self.ln.set_data([],[])
 
             # convert node to X,Y list
             X = [n.vertices[0] for n in self.optimal]
             Y = [n.vertices[1] for n in self.optimal]
             self.ln, = plt.plot(X,Y)
-
-            self.stop_running=True
         
         return self.ln,
