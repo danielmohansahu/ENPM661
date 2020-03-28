@@ -55,7 +55,7 @@ class ExplorationVisualizer:
         ani = FuncAnimation(
                 self.fig, 
                 self._update,
-                interval=1,
+                interval=10,
                 repeat=False,
                 repeat_delay=10,
                 init_func=self._init,
@@ -66,7 +66,7 @@ class ExplorationVisualizer:
             # save to a local video file
             print("Saving video to `results.mp4`...")
             Writer = writers["ffmpeg"]
-            writer = Writer(fps=100, metadata=dict(artist="Me"), bitrate=1800)
+            writer = Writer(fps=30, metadata=dict(artist="Me"), bitrate=1800)
             ani.save("results.mp4", writer=writer)
             return
         elif save and "ffmpeg" not in writers.list():
