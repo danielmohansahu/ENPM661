@@ -13,7 +13,7 @@ DEFAULT_GOAL=[295,195]
 DEFAULT_CLEARANCE=0
 DEFAULT_RADIUS=0
 
-def parse_args():
+def improvisation():
     parser = argparse.ArgumentParser(description="Solve for an optimal path via Dijkstra.") 
     parser.add_argument("-s", "--start", default=DEFAULT_START, nargs='+', type=int, help="Starting node indices.")
     parser.add_argument("-g", "--goal", default=DEFAULT_GOAL, nargs='+', type=int, help="Goal node indices.")
@@ -26,7 +26,7 @@ if __name__ == "__main__":
     st = time.time()
 
     # get args
-    args = parse_args()
+    args = improvisation()
 
     # dummy map (for testing)
     obstacle_map = FinalMap()
