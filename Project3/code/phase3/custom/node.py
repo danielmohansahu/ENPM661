@@ -3,6 +3,7 @@
 This class also defines the action set of a node.
 """
 
+import math
 import random
 import numpy as np
 
@@ -36,6 +37,20 @@ class ActionSet:
             [RPM[1],RPM[0]]
         ]
 
+    def calc_resolution(self):
+        """Calculate necessary X/Y/Theta resolution
+        """
+        moves = self.get_moves([0,0,0])
+        X = set([abs(m[0]) for m in moves.keys() if m[0]!=0])
+        T = set([m[2] for m in moves.keys() if m[2]!=0])
+
+        # get recommended resolution:
+        leading_digit = lambda x: -int(math.floor(math.log10(abs(x))))
+        round_to_first = lambda x,d: np.floor(x*10**d)/10**d
+        res_x = min([round_to_first(v,leading_digit(v)) for v in X]) 
+        res_t = min([round_to_first(v,leading_digit(v)) for v in T]) 
+        return [res_x, res_x, res_t]
+
     def get_moves(self, current_pos):
         """Calculate the potential moves from the given position.
         """
@@ -44,9 +59,9 @@ class ActionSet:
             cur_angle = current_pos[2]*np.pi/180
 
             # calcute deltas
-            dx = 0.5*self.r*(action[0]+action[1])*np.cos(cur_angle)*self.dt
-            dy = 0.5*self.r*(action[0]+action[1])*np.sin(cur_angle)*self.dt
             dtheta = self.r*(action[1]-action[0])*self.dt/self.L
+            dx = 0.5*self.r*(action[0]+action[1])*np.cos(dtheta+cur_angle)*self.dt
+            dy = 0.5*self.r*(action[0]+action[1])*np.sin(dtheta+cur_angle)*self.dt
 
             # calculate new absolute positions
             new_x = current_pos[0] + dx

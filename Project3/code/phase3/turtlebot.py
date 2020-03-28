@@ -43,8 +43,10 @@ if __name__ == "__main__":
             options.wheel_radius,
             options.wheel_separation,
             options.timestep)
+    resolution = action_set.calc_resolution()
+    print("Using graph resolution {}".format(resolution))
     Node.set_actionset(action_set)
-    Node.set_resolution(options.resolution)
+    Node.set_resolution(resolution)
     Node.set_hash_offset(obstacle_map.size()+[0])
 
     # create start and goal nodes
@@ -66,7 +68,7 @@ if __name__ == "__main__":
     # perform search    
     print("Performing A* search...")
     d = AStar(graph, start_node)
-    if not d.solve(goal_node, goal_tolerance=1.0):
+    if not d.solve(goal_node, goal_tolerance=10*resolution[0]):
         print("Failed to find a path to the goal node.")
         sys.exit(1)
 
