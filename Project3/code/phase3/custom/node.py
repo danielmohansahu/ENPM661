@@ -4,19 +4,7 @@ This class also defines the action set of a node.
 """
 
 import math
-import random
 import numpy as np
-
-def get_random_node(map_):
-    """Get a random valid node within our workspace. 
-    """
-    x = y = theta = -1
-    bounds = map_.workspace.get_extents()
-    while not map_.is_valid([x,y,theta]):
-        x = random.randint(bounds.x0,bounds.x1) 
-        y = random.randint(bounds.y0,bounds.y1) 
-        theta = random.randint(0,360)
-    return node.Node(np.array([x,y,theta]))
 
 class ActionSet:
     """Class containing all the available node actions.
