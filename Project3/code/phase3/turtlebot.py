@@ -13,7 +13,7 @@ from custom.visualize import ExplorationVisualizer
 DEFAULT_START = [-4, -4, 60]
 DEFAULT_GOAL = [4, 4]
 DEFAULT_RPM = [100, 100]
-DEFAULT_CLEARANCE = 0.1
+DEFAULT_CLEARANCE = 0.01
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Solve for an optimal path via A*.") 
@@ -79,5 +79,5 @@ if __name__ == "__main__":
             *d.get_exploration(True, goal_node),
             optimal_path
     ) 
-    visualizer.plot()
+    visualizer.plot(False)
 
