@@ -23,6 +23,8 @@ class ActionSet:
     def __init__(self, RPM=[1,1], r=0.5, L=0.5, dt=0.01):
         # time step (in minutes)
         self.dt = dt
+        self.r = r
+        self.L = L
         self.actions = [
             [0,RPM[0]],
             [RPM[0],0],
@@ -42,9 +44,9 @@ class ActionSet:
             cur_angle = current_pos[2]*np.pi/180
 
             # calcute deltas
-            dx = 0.5*r*(action[0]+action[1])*np.cos(cur_angle)*self.dt
-            dy = 0.5*r*(action[0]+action[1])*np.sin(cur_angle)*self.dt
-            dtheta = r*(action[1]-action[0])*self.dt/L
+            dx = 0.5*self.r*(action[0]+action[1])*np.cos(cur_angle)*self.dt
+            dy = 0.5*self.r*(action[0]+action[1])*np.sin(cur_angle)*self.dt
+            dtheta = self.r*(action[1]-action[0])*self.dt/self.L
 
             # calculate new absolute positions
             new_x = current_pos[0] + dx
@@ -59,10 +61,13 @@ class Node:
     """
     """
     # default resolution of node directions (for binning)
-    resolution_ = (1, 1, 30)
+    resolution_ = None
+
+    # hash offset (a hack to handle the hashing of negative tuples
+    hash_offset_ = None
 
     # default action set
-    action_set_ = ActionSet()
+    action_set_ = None
 
     def __init__(self, vertices, cost2come=0, parent=None):
         # vertices (x,y,theta) position of node
@@ -80,7 +85,7 @@ class Node:
 
         Note that this uses our rounded vertices, to allow binning.
         """
-        return hash(tuple(self.rounded_vertices))
+        return hash(tuple(self.rounded_vertices+self.hash_offset_))
 
     def __str__(self):
         """String representation (for debugging / convenience)
@@ -95,12 +100,18 @@ class Node:
         return self.rounded_vertices == rhs.rounded_vertices
 
     @classmethod
+    def set_hash_offset(cls, offset):
+        """Set the hash offset (for all Nodes)
+        """
+        cls.hash_offset_ = np.array(offset)
+
+    @classmethod
     def set_actionset(cls, actionset):
         """Set the action set (for all Nodes)
         """
         if not isinstance(actionset, ActionSet):
             raise RuntimeError("Given actionset is of the wrong class.")
-        cls.action_set = actionset
+        cls.action_set_ = actionset
 
     @classmethod
     def set_resolution(cls, resolution):
@@ -118,10 +129,15 @@ class Node:
             result.append(round(val/res)*res)
         return result
 
-    def cost2go(self, goal_node):
+    def cost2go(self, target_node):
         """Calculate the euclidean distance to the target node.
         """
-        return np.linalg.norm(self.vertices[:2]-goal_node.vertices[:2])
+        return np.linalg.norm(self.vertices[:2]-target_node.vertices[:2])
+
+    def is_goal(self, goal_node, tolerance):
+        """Check whether this is the goal node.
+        """
+        return self.cost2go(goal_node) < tolerance 
 
     def get_children(self):
         """Generate and return a list of all possible child nodes.
@@ -132,7 +148,7 @@ class Node:
         children = []
         moves = self.action_set_.get_moves(self.vertices)
 
-        for move, cost in actions.items(): 
+        for move, cost in moves.items(): 
             child = Node(np.array(move), self.cost2come + cost, self)
 
             # small optimization; don't return parent node
