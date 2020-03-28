@@ -63,7 +63,7 @@ class Graph:
 
             # update status bar
             sys.stdout.write('\r')
-            sys.stdout.write("[%-20s] %d%% (worst case)" % ('='*int(20*len(nodes)/self.max_nodes), int(100*len(nodes)/self.max_nodes)))
+            sys.stdout.write("[%-20s] %d%% (worst case: %d/%d)" % ('='*int(20*len(nodes)/self.max_nodes), int(100*len(nodes)/self.max_nodes),len(nodes),self.max_nodes))
             sys.stdout.flush()
 
             current_nodes = new_nodes
