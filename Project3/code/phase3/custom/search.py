@@ -25,8 +25,9 @@ class AStar:
         # initialize solution lists
         self._dist = None
         self._prev = None
+        self._goal = None
 
-    def solve(self, goal_node):
+    def solve(self, goal_node, goal_tolerance):
         """Find the shortest path from source to target in the
         given graph.
         """
@@ -50,7 +51,7 @@ class AStar:
         for node_hash in self.graph.nodes.keys():
             heappush(Q, (dist[node_hash], node_hash))
       
-        # core dijkstra algorithm
+        # core A* algorithm
         while len(Q) != 0:
 
             # get the node with the lowest cost2come + cost2go
@@ -59,9 +60,14 @@ class AStar:
             # ignore nodes we've already visited (they're invalid)
             if u in visited.keys():
                 continue
-            
+
             # mark as visited
             visited[u] = u_cost
+
+            # check if this is the goal node and return if so
+            if self.graph.nodes[u].is_goal(goal_node, goal_tolerance):
+                self._goal = u
+                break
 
             # get all child nodes (and relative cost)
             for v,v_cost in self.graph.tree[u].items():
@@ -83,19 +89,23 @@ class AStar:
         self._dist = dist
         self._prev = prev
         self._visited = visited
-        print("Took {:.3f}s to solve for optimal path.".format(time.time()-st))
+        print("Took {:.3f}s to explore graph.".format(time.time()-st))
+
+        # check if we actually found the goal node
+        if not self._goal:
+            print("Failed to find goal node.")
+            return False
+        return True
     
-    def get_path(self, dst):
+    def get_path(self):
         """Get the optimal path and cost to the given destination node.
         """
         # sanity checks
-        current_hash = hash(dst)
-        if self._dist is None:
+        if self._goal is None:
             raise RuntimeError("Cannot return optimal path; call `solve` first.")
-        if not isinstance(dst, Node):
-            raise TypeError("dst input must be of class node.Node")
-        if current_hash not in self.graph.nodes.keys():
-            raise RuntimeError("Given destination node not found in graph.")
+
+        # start with goal node (assuming we found it)
+        current_hash = self._goal
 
         # backtrack to start node
         path = []
