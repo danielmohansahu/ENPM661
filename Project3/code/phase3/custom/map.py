@@ -23,6 +23,11 @@ class Map(ABC):
             min_corner
         ]))
 
+    def size(self):
+        """Return workspace size.
+        """
+        return [self.xbounds[1]-self.xbounds[0],self.ybounds[1]-self.ybounds[0]]
+
     def is_in_workspace(self, pt, buffer_=0):
         """Returns True if the given point is within our workspace."""
         return self.workspace.contains_point(pt, radius=-(buffer_+1))
