@@ -1,15 +1,19 @@
 #!/usr/bin/env python3
 
 import argparse
-from custom.map import TestMap,FinalMap
+from custom.map import FinalMap
 from custom import node, graph, search, visualize
 
 # default inputs
-DEFAULT_START=[50, 30, 60]
-DEFAULT_GOAL=[150, 150, 60]
+DEFAULT_START=[-4, -4, 60]
+DEFAULT_GOAL=[4, 4, 60]
+DEFAULT_RPM1=1
+DEFAULT_RPM2=1
 DEFAULT_CLEARANCE=1
 DEFAULT_RADIUS=1
-DEFAULT_STEP_SIZE=1
+DEFAULT_WHEEL_RADIUS=0.5
+DEFAULT_WHEEL_SEPARATION=0.5
+DEFAULT_TIMESTEP=0.01
 DEFAULT_THETA_RES=30
 DEFAULT_X_RES=0.5
 DEFAULT_Y_RES=0.5
@@ -18,10 +22,14 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Solve for an optimal path via A*.") 
     parser.add_argument("-s", "--start", default=DEFAULT_START, nargs='+', type=int, help="Starting node indices.")
     parser.add_argument("-g", "--goal", default=DEFAULT_GOAL, nargs='+', type=int, help="Goal node indices.")
+    parser.add_argument("-1", "--rpm1", default=DEFAULT_RPM1, type=float, help="Left wheel RPM.")
+    parser.add_argument("-2", "--rpm2", default=DEFAULT_RPM2, type=float, help="Right wheel RPM.")
     parser.add_argument("-c", "--clearance", default=DEFAULT_CLEARANCE, type=float, help="Obstacle avoidance clearance.")
     parser.add_argument("-r", "--radius", default=DEFAULT_RADIUS, type=float, help="Robot radius.")
-    parser.add_argument("-S", "--step-size", default=DEFAULT_STEP_SIZE, type=int, help="Movement step size.")
-    parser.add_argument("-t", "--theta-res", default=DEFAULT_THETA_RES, type=float, help="Theta movement resolution.")
+    parser.add_argument("-t", "--timestep", default=DEFAULT_TIMESTEP, type=float, help="Timestep used in solving action set.")
+    parser.add_argument("-w", "--wheel-radius", default=DEFAULT_WHEEL_RADIUS, type=float, help="Wheel radius (meters)")
+    parser.add_argument("-S", "--wheel-separation", default=DEFAULT_WHEEL_SEPARATION, type=float, help="Distance between robot wheels (meters).")
+    parser.add_argument("-T", "--theta-res", default=DEFAULT_THETA_RES, type=float, help="Theta movement resolution.")
     parser.add_argument("-x", "--x-res", default=DEFAULT_X_RES, type=float, help="X movement resolution.")
     parser.add_argument("-y", "--y-res", default=DEFAULT_Y_RES, type=float, help="Y movemement resolution.")
     return parser.parse_args()
@@ -34,7 +42,11 @@ if __name__ == "__main__":
     obstacle_map = FinalMap()
 
     # Set node class variables based on inputs
-    action_set = node.ActionSet(args.step_size,[args.theta_res*v for v in [-2,-1,0,1,1]])
+    action_set = node.ActionSet(
+            [args.rpm1, args.rpm2],
+            args.wheel_radius,
+            args.wheel_separation,
+            args.timestep)
     resolution = (args.x_res, args.y_res, args.theta_res)
     node.Node.set_actionset(action_set)
     node.Node.set_resolution(resolution)
