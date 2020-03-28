@@ -1,6 +1,9 @@
 # virtual environment stuff
 enpm661_env/
 
+# videos
+*.mp4
+
 # python stuff
 *__pycache__/
 
