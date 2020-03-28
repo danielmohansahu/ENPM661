@@ -2,18 +2,16 @@
 
 class Options:
     # required arguments
-    start               = None
-    goal                = None
-    rpm                 = None
-    clearance           = None
+    start               = None      # [meters, meters, degrees]
+    goal                = None      # [meters, meters]
+    rpm                 = None      # [rot/min, rot/min]
+    clearance           = None      # meters
     
     # fixed constants
-    radius              = 0.354/2
-    wheel_radius        = 0.076/2
-    wheel_separation    = 0.3175 # estimate
-    timestep            = 1/10
-    # @TODO resolution should be a function of timestep / RPM
-    resolution          = [0.05, 0.05, 15]
+    radius              = 0.354/2   # meters
+    wheel_radius        = 0.076/2   # meters
+    wheel_separation    = 0.3175    # meters (estimate)
+    timestep            = 1/15      # minutes
 
     def __init__(self, start, goal, rpm, clearance):
         if not len(start) == 3:
