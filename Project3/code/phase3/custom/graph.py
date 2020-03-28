@@ -20,8 +20,8 @@ class Graph:
             raise ValueError("Start node given to Graph isn't a Node object.")
 
         # calculate total possible number of nodes (for reference)
-        self.max_nodes = map_.xbounds[-1]/start_node.resolution_[0]\
-                         * map_.ybounds[-1]/start_node.resolution_[1]\
+        self.max_nodes = map_.size()[0]/start_node.resolution_[0]\
+                         * map_.size()[1]/start_node.resolution_[1]\
                          * 360/start_node.resolution_[2]
 
         # nodes: dict of explored nodes (key: value) -> (hash: node)
