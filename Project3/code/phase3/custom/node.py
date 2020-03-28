@@ -20,22 +20,40 @@ def get_random_node(map_):
 class ActionSet:
     """Class containing all the available node actions.
     """
-    def __init__(self, step_size=1, angles=[-60, -30, 0, 30, 60]):
-        """
-        """
-        self.angles = angles
-        self.step_size = step_size
+    def __init__(self, RPM=[1,1], r=0.5, L=0.5, dt=0.01):
+        # time step (in minutes)
+        self.dt = dt
+        self.actions = [
+            [0,RPM[0]],
+            [RPM[0],0],
+            [RPM[0],RPM[0]],
+            [0,RPM[1]],
+            [RPM[1],0],
+            [RPM[1],RPM[1]],
+            [RPM[0],RPM[1]],
+            [RPM[1],RPM[0]]
+        ]
 
-    def get_actions(self, vertices):
-        """Calculate the potential actions from the given position.
+    def get_moves(self, current_pos):
+        """Calculate the potential moves from the given position.
         """
-        actions = {}
-        for angle in self.angles:
-            new_angle = (vertices[2] + angle)%360
-            x_diff = self.step_size * np.cos(new_angle*np.pi/180)
-            y_diff = self.step_size * np.sin(new_angle*np.pi/180)
-            actions[(x_diff, y_diff, angle)] = self.step_size
-        return actions
+        moves = {}
+        for action in self.actions:
+            cur_angle = current_pos[2]*np.pi/180
+
+            # calcute deltas
+            dx = 0.5*r*(action[0]+action[1])*np.cos(cur_angle)*self.dt
+            dy = 0.5*r*(action[0]+action[1])*np.sin(cur_angle)*self.dt
+            dtheta = r*(action[1]-action[0])*self.dt/L
+
+            # calculate new absolute positions
+            new_x = current_pos[0] + dx
+            new_y = current_pos[1] + dy
+            new_angle = (current_pos[2] + dtheta*180/np.pi)%360
+
+            # assume that cost is measured in time
+            moves[(new_x, new_y, new_angle)] = self.dt
+        return moves
 
 class Node:
     """
@@ -112,13 +130,10 @@ class Node:
         and obstacles.
         """
         children = []
-        actions = self.action_set_.get_actions(self.vertices)
+        moves = self.action_set_.get_moves(self.vertices)
 
-        for action, cost in actions.items(): 
-            # calculate child position and cost and store in a new node
-            new_vertices = self.vertices + np.array(action)
-            new_vertices[2] %= 360
-            child = Node(new_vertices, self.cost2come + cost, self)
+        for move, cost in actions.items(): 
+            child = Node(np.array(move), self.cost2come + cost, self)
 
             # small optimization; don't return parent node
             if (not self.parent) or child != self.parent:
