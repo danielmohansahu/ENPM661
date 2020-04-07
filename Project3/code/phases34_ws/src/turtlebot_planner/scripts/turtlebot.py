@@ -2,12 +2,12 @@
 
 import sys
 import argparse
-from custom.map import FinalMap
-from custom.node import Node, ActionSet
-from custom.graph import Graph
-from custom.search import AStar
-from custom.options import Options
-from custom.visualize import ExplorationVisualizer
+from turtlebot_planner.map import FinalMap
+from turtlebot_planner.node import Node, ActionSet
+from turtlebot_planner.graph import Graph
+from turtlebot_planner.search import AStar
+from turtlebot_planner.options import Options
+from turtlebot_planner.visualize import ExplorationVisualizer
 
 # default input args
 DEFAULT_START = [-4, -4, 60]
