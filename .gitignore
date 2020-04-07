@@ -15,6 +15,7 @@ enpm661_env/
 
 # libreoffice stuff
 *.~lock.*
+*.odp
 
 # ignore submitted stuff
 submitted/
