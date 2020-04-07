@@ -1,0 +1,9 @@
+<launch>
+
+    <arg name="start" default="0 0 0"/>
+
+    <include file="$(find gazebo_ros)/launch/empty_world.launch">
+        <arg name="world_name" value="$(find turtlebot_planner)/config/map.world" />
+    </include>
+
+</launch>
