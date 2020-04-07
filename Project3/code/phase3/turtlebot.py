@@ -18,9 +18,9 @@ DEFAULT_CLEARANCE = 0.01
 def parse_args():
     parser = argparse.ArgumentParser(description="Solve for an optimal path via A*.") 
     parser.add_argument("-s", "--start", 
-        default=DEFAULT_START, nargs='+', type=int, help="Starting node indices.")
+        default=DEFAULT_START, nargs='+', type=float, help="Starting node indices.")
     parser.add_argument("-g", "--goal", 
-        default=DEFAULT_GOAL, nargs='+', type=int, help="Goal node indices.")
+        default=DEFAULT_GOAL, nargs='+', type=float, help="Goal node indices.")
     parser.add_argument("-r", "--rpm", 
         default=DEFAULT_RPM, nargs='+', type=float, help="Input RPM")
     parser.add_argument("-c", "--clearance", 
