@@ -12,7 +12,7 @@ class Options:
     radius              = 0.354/2   # meters
     wheel_radius        = 0.033     # meters
     wheel_separation    = 0.16      # meters (estimate)
-    timestep            = 1.0/120   # minutes
+    timestep            = 3.0/60    # minutes
 
     def __init__(self, start, goal, rpm, clearance, visualize):
         if not len(start) == 3:
