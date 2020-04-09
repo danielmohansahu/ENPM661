@@ -43,6 +43,7 @@ class AStar:
 
         # collect visited nodes (for visualization) 
         visited = OrderedDict()
+        visited_hashes = set()
         
         # initialize source node
         dist[self.src_hash] = 0
@@ -58,11 +59,12 @@ class AStar:
             u_cost,u = heappop(Q)
             
             # ignore nodes we've already visited (they're invalid)
-            if u in visited.keys():
+            if u in visited_hashes:
                 continue
 
             # mark as visited
             visited[u] = u_cost
+            visited_hashes.add(u)
 
             # check if this is the goal node and return if so
             if self.graph.nodes[u].is_goal(goal_node, goal_tolerance):
@@ -72,7 +74,7 @@ class AStar:
             # get all child nodes (and relative cost)
             for v,v_cost in self.graph.tree[u].items():
                 # ignore already processed nodes
-                if v in visited.keys():
+                if v in visited_hashes:
                     continue
 
                 # update the weights of each child node
