@@ -9,12 +9,12 @@ from turtlebot_planner.node import Node, ActionSet
 from turtlebot_planner.graph import Graph
 from turtlebot_planner.search import AStar
 from turtlebot_planner.options import Options
-from turtlebot_planner.visualize import ExplorationVisualizer
+from turtlebot_planner.visualize import ExplorationVisualizer, plot_path
 
 # default input args
 DEFAULT_START = [-4, -4, 0]
 DEFAULT_GOAL = [4, 4]
-DEFAULT_RPM = [1000, 200]
+DEFAULT_RPM = [100, 200]
 DEFAULT_CLEARANCE = 0.01
 
 def parse_args():
@@ -115,6 +115,8 @@ if __name__ == "__main__":
                 *d.get_exploration(True, goal_node)
         ) 
         visualizer.plot(True)
+    else:
+        plot_path(obstacle_map, optimal_path, True)
 
     # control to path
     traj = generate_trajectory(optimal_path, options.wheel_radius, options.wheel_separation)
