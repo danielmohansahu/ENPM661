@@ -25,24 +25,33 @@ class ActionSet:
             [RPM[1],RPM[0]]
         ]
 
-    def calc_resolution(self):
+    def calc_resolution(self, start_theta):
         """Calculate necessary X/Y/Theta resolution
         """
-        moves = self.get_moves([0,0,0])
-        X = set([abs(m[0]) for m in moves.keys() if m[0]!=0])
-        T = set([m[2] for m in moves.keys() if m[2]!=0])
+        _,moves,_ = self.get_moves([0,0,0])
+        X = set([abs(m[0]) for m in moves if m[0]!=0])
+        T = [m[2] for m in moves]
+        T = set([m for m in T+[start_theta] if m!=0])
 
         # get recommended resolution:
         leading_digit = lambda x: -int(math.floor(math.log10(abs(x))))
-        round_to_first = lambda x,d: np.floor(x*10**d)/10**d
+        round_to_first = lambda x,d: np.floor(x*10**d)/10.0**d
         res_x = min([round_to_first(v,leading_digit(v)) for v in X]) 
         res_t = min([round_to_first(v,leading_digit(v)) for v in T]) 
+        
+        # set some more reasonable limits
+        res_x = max(res_x, 0.1)
+        res_t = max(res_t, 15)
+
         return [res_x, res_x, res_t]
 
     def get_moves(self, current_pos):
         """Calculate the potential moves from the given position.
         """
-        moves = {}
+        actions = []
+        moves = []
+        costs = []
+
         for action in self.actions:
             cur_angle = current_pos[2]*np.pi/180
 
@@ -57,8 +66,10 @@ class ActionSet:
             new_angle = (current_pos[2] + dtheta*180/np.pi)%360
 
             # assume that cost is measured in time
-            moves[(new_x, new_y, new_angle)] = self.dt
-        return moves
+            actions.append(action)
+            moves.append((new_x, new_y, new_angle))
+            costs.append(self.dt)
+        return actions, moves, costs
 
 class Node:
     """
@@ -72,7 +83,7 @@ class Node:
     # default action set
     action_set_ = None
 
-    def __init__(self, vertices, cost2come=0, parent=None):
+    def __init__(self, vertices, cost2come=0, parent=None, parent_action=None):
         # vertices (x,y,theta) position of node
         self.vertices = np.array(vertices)
         self.rounded_vertices = self.round(vertices)
@@ -82,6 +93,7 @@ class Node:
 
         # reference to the parent node
         self.parent = parent
+        self.parent_action = parent_action
 
     def __hash__(self):
         """Calculate the unique hash of our vertices (for easier comparison)
@@ -149,10 +161,10 @@ class Node:
         and obstacles.
         """
         children = []
-        moves = self.action_set_.get_moves(self.vertices)
+        actions,moves,costs = self.action_set_.get_moves(self.vertices)
 
-        for move, cost in moves.items(): 
-            child = Node(np.array(move), self.cost2come + cost, self)
+        for action, move, cost in zip(actions,moves,costs): 
+            child = Node(np.array(move), self.cost2come + cost, self, action)
 
             # small optimization; don't return parent node
             if (not self.parent) or child != self.parent:

@@ -1,14 +1,15 @@
 """Obstacle map
 """
 
-from abc import ABC, abstractmethod
+from abc import ABCMeta, abstractmethod
 import numpy as np
 import matplotlib.path as mplPath
 from matplotlib import pyplot as plt
 from .obstacle import Polygon,Ellipse,Circle
 
-class Map(ABC):
+class Map:
     """A base class used to define workspace bounds and obstacles."""
+    __metaclass__ = ABCMeta
     def __init__(self, min_corner, max_corner):
         # The minimum and maximum bounds of our workspace
         self.min_corner = np.array(min_corner)
@@ -57,7 +58,7 @@ class Map(ABC):
 
 class FinalMap(Map):
     def __init__(self):
-        super().__init__([-5,-5],[5,5])
+        super(FinalMap,self).__init__([-5,-5],[5,5])
         
         # add obstacles
         self.obstacles = [

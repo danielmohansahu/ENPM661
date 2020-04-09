@@ -6,14 +6,15 @@ class Options:
     goal                = None      # [meters, meters]
     rpm                 = None      # [rot/min, rot/min]
     clearance           = None      # meters
+    visualize           = None      # bool
     
-    # fixed constants
+    # fixed constants (taken from turtlebot3 URDF)
     radius              = 0.354/2   # meters
-    wheel_radius        = 0.076/2   # meters
-    wheel_separation    = 0.3175    # meters (estimate)
-    timestep            = 1/15      # minutes
+    wheel_radius        = 0.033     # meters
+    wheel_separation    = 0.16      # meters (estimate)
+    timestep            = 1.0/120   # minutes
 
-    def __init__(self, start, goal, rpm, clearance):
+    def __init__(self, start, goal, rpm, clearance, visualize):
         if not len(start) == 3:
             raise RuntimeError("Invalid start node: {}".format(start))
         if not len(goal) == 2:
@@ -24,3 +25,4 @@ class Options:
         self.goal = goal
         self.rpm = rpm
         self.clearance = clearance
+        self.visualize = visualize

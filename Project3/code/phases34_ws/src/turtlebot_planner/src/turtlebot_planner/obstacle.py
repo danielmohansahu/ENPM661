@@ -1,15 +1,16 @@
 """Obstacle classes (for easy map generation).
 """
 
-from abc import ABC, abstractmethod
+from abc import ABCMeta, abstractmethod
 import numpy as np
 import matplotlib.path as mplPath
 from matplotlib import patches
 
-class Obstacle(ABC):
+class Obstacle(object):
     """Base Obstacle class; defines API"""
+    __metaclass_ = ABCMeta
     def __init__(self):
-        ...
+        pass
 
     def __contains__(self, val):
         # convenience python magic to use the "in" method
@@ -18,16 +19,16 @@ class Obstacle(ABC):
     @abstractmethod
     def within(self,pt,buffer_):
         """Return True if the given point is within the Obstacle."""
-        ...
+        pass
     
     @abstractmethod
     def plot(self):
         """Plot self."""
-        ...
+        pass
 
 class Polygon(Obstacle):
     def __init__(self, pts):
-        super().__init__()
+        super(Polygon, self).__init__()
         self.pts = mplPath.Path(np.array(pts))
 
     def within(self, pt, buffer_=0):
@@ -40,7 +41,7 @@ class Polygon(Obstacle):
 
 class Ellipse(Obstacle):
     def __init__(self, center, major, minor):
-        super().__init__()
+        super(Ellipse,self).__init__()
         self.center = center
         self.major = major
         self.minor = minor
@@ -58,4 +59,4 @@ class Ellipse(Obstacle):
 
 class Circle(Ellipse):
     def __init__(self, center, radius):
-        super().__init__(center, radius, radius)
+        super(Circle,self).__init__(center, radius, radius)
