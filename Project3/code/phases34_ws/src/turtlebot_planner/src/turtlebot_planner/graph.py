@@ -2,6 +2,7 @@
 """
 import time
 import sys
+import rospy
 from collections import defaultdict
 from .node import Node
 
@@ -34,16 +35,19 @@ class Graph:
         """Build out the set of Nodes, starting from our start node.
         """
         tree = defaultdict(dict)
-        nodes = {}
+
+        nodes={}
+        # more efficient lookup:
+        node_hashes=set()
         
         current_nodes = [start_node] 
-        while len(current_nodes) != 0:
+        while len(current_nodes) != 0 and not rospy.is_shutdown():
             new_nodes = []
             for node in current_nodes:
                 node_hash = hash(node)
 
                 # we've already explored this node
-                if node_hash in nodes.keys():
+                if node_hash in node_hashes:
                     continue
 
                 # invalid node (obstacle or outside bounds)
@@ -56,6 +60,7 @@ class Graph:
                
                 # valid node; add it to our visited nodes
                 nodes[node_hash] = node
+                node_hashes.add(node_hash)
                 children = node.get_children()
                 
                 # add children to be processed next round
