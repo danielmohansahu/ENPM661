@@ -6,6 +6,7 @@ enpm661_env/
 
 # python stuff
 *__pycache__/
+*.pyc
 
 # jupyter notebook stuff
 *.ipynb_checkpoints
