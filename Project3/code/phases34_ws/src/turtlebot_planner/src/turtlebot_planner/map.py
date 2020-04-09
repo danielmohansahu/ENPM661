@@ -58,7 +58,7 @@ class Map:
 
 class FinalMap(Map):
     def __init__(self):
-        super(FinalMap,self).__init__([-5,-5],[5,5])
+        super(FinalMap,self).__init__([-5.2,-5.2],[5.2,5.2])
         
         # add obstacles
         self.obstacles = [
