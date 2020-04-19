@@ -1,0 +1,15 @@
+<launch>
+
+  <!-- launch baxter gazebo -->
+  <include file="$(find baxter_gazebo)/launch/baxter_world.launch" output="screen" />
+
+  <!-- launch baxter action server -->
+  <node pkg="baxter_interface" type="joint_trajectory_action_server.py" name="baxter_server" output="screen" />
+
+  <!-- launch baxter moveit -->
+  <include file="$(find baxter_moveit_config)/launch/demo_baxter.launch" > 
+    <arg name="right_electric_gripper" value="true" /> 
+    <arg name="left_electric_gripper" value="true" /> 
+  </include>
+
+</launch>
